@@ -361,14 +361,16 @@ def generateWall(args: CommandEventArgs):
 def scriptGenerateWall(exportPath: str):
     """Not used by the add-in; meant to be called by an external script."""
 
-    futil.log("scriptGenerateWall: design wall system")
+    futil.log(f"scriptGenerateWall: exporting to step file to '{exportPath}'")
+    notchedPath = f"{exportPath}/notched"
+    if not os.path.exists(notchedPath):
+        os.makedirs(notchedPath)
 
     for notch in [True, False]:
-        for h in range(1, 9):
-            for w in range(1, 9):
+        for h in range(1, 3):
+            for w in range(1, 3):
                 design = internalGenerateWall(w, h, notch)
-                filename = exportPath + f"{'/notched/' if notch else ''}wall_{w}x{h}{'_notched' if notch else ''}.step"
-                futil.log(f"scriptGenerateWall: exporting to stl file '{filename}'")
+                filename = f"{exportPath}/{'notched/' if notch else ''}wall_{w}x{h}{'_notched' if notch else ''}.step"
                 exportStepFile(design, filename)
 
                 # clean up the design
