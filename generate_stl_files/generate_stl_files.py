@@ -7,18 +7,28 @@ import adsk.fusion
 
 CALLBACK_NAME = "scriptGenerateWall"
 
+base_path = "<path>"
+
 
 def run(context):
     ui = None
-    basePath = "/Users/seb/stl_files/"  # create a input dialog for this
+    global base_path
 
     try:
         app = adsk.core.Application.get()
         ui = app.userInterface
+        folder_dialog = ui.createFolderDialog()
+        folder_dialog.title = "Select a Folder"
+        folder_dialog.isMultiSelectEnabled = False
 
-        exportPathParamValue = basePath
-        addin_thread = threading.Thread(target=stl_wall_generation)
-        addin_thread.start()
+        dialog_result = folder_dialog.showDialog()
+        if dialog_result == adsk.core.DialogResults.DialogOK:
+            base_path = folder_dialog.folder
+            addin_thread = threading.Thread(target=stl_wall_generation)
+            addin_thread.start()
+
+        else:
+            ui.messageBox("Not running script, no directory selected.")
 
     except:
         if ui:
@@ -33,7 +43,7 @@ def stl_wall_generation():
         app.log("calling addin...", adsk.core.LogLevels.InfoLogLevel, adsk.core.LogTypes.ConsoleLogType)
 
         design = app.activeProduct
-        design.userParameters.itemByName("script_exportPath").comment = "<paht>"
+        design.userParameters.itemByName("script_exportPath").comment = base_path
         cmdDef.execute()
 
 
