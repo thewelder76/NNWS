@@ -36,7 +36,7 @@ The plugin has a dropdown menu for different accessories with different settings
 
 ## Fusion 360 Add-In Installation
 - **From source:** (TODO: Insert images)
-  1. Get the code locally (Only available trought git right now) ```git clone https://github.com/thewelder76/NNWS```
+  1. Get the code locally (Only available trought git right now) ```git clone https://github.com/thewelder76/NNWS_fusion360```
   2. Open the `Sript and Add-Ins` Dialog
   3. Choose the `Add-Ins` tab and click the + besides `My Add-ins`
   4. Choose the path of the repo cloned at step 1 and click `Open`
