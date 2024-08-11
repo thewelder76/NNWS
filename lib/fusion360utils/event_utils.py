@@ -73,7 +73,6 @@ def _define_handler(handler_type, callback, name: str = None):
                     # wall generation callback
                     design = adsk.core.Application.get().activeProduct
                     exportPathParamValue = design.userParameters.itemByName("script_exportPath").comment
-                    log("exportPathParam: {}".format(exportPathParamValue))
                     callback(exportPathParamValue)
 
                 else:
