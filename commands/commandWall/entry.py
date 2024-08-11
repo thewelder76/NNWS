@@ -124,7 +124,9 @@ def stop():
         script_definition.deleteMe()
         design = app.activeProduct
         # deleting user's parameters created for the script automation
-        design.userParameters.itemByName("script_exportPath").deleteMe()
+        exportPath = design.userParameters.itemByName("script_exportPath")
+        if exportPath:
+            exportPath.deleteMe()
 
     # Delete the button command control
     if command_control:
@@ -341,7 +343,7 @@ def generateWall(args: CommandEventArgs):
     dimensionGroup = inputs.itemById(MENU_DIMENSION_GROUP)
     widthInput = dimensionGroup.children.itemById(MENU_DIMENSION_WIDTH)
     heightInput = dimensionGroup.children.itemById(MENU_DIMENSION_HEIGHT)
-    standardWallPattern: BoolValueCommandInput = dimensionGroup.children.itemById(MENU_DIMENSION_STANDARD_WALL_PATTERN)
+    standardWallPattern: BoolValueCommandInput = dimensionGroup.children.itemById(MENU_DIMENSION_STANDARD_WALL_PATTERN).value
     notch: BoolValueCommandInput = dimensionGroup.children.itemById(WALL_NOTCH)
 
     table: TableCommandInput = dimensionGroup.children.itemById(WALL_PATTERN_TABLE)
