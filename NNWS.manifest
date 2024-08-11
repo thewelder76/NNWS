@@ -1,0 +1,13 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"id":	"84ba045c-f75a-4bae-b161-96deab5259f3",
+	"author":	"thewelder76",
+	"description":	{
+		"":	"NNWS"
+	},
+	"version":	"0.0.1",
+	"runOnStartup":	false,
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}

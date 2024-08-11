@@ -1,0 +1,10 @@
+{
+	"autodeskProduct":	"Fusion",
+	"type":	"script",
+	"author":	"thewelder76",
+	"description":	{
+		"":	"NNWS Automation"
+	},
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}
