@@ -367,8 +367,8 @@ def scriptGenerateWall(exportPath: str):
         os.makedirs(notchedPath)
 
     for notch in [True, False]:
-        for h in range(1, 3):
-            for w in range(1, 3):
+        for h in range(1, 9):
+            for w in range(1, 9):
                 design = internalGenerateWall(w, h, notch)
                 filename = f"{exportPath}/{'notched/' if notch else ''}wall_{w}x{h}{'_notched' if notch else ''}.step"
                 exportStepFile(design, filename)

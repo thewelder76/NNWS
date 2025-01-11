@@ -207,7 +207,7 @@ def filletEdges(targetOccurence: Occurrence, edgeCollection: ObjectCollection, r
     """
     fillet: FilletFeatures = targetOccurence.features.filletFeatures
     filletInput: FilletFeatureInput = fillet.createInput()
-    filletInput.addConstantRadiusEdgeSet(edgeCollection, ValueInput.createByReal(radius), True)
+    filletInput.edgeSetInputs.addConstantRadiusEdgeSet(edgeCollection, ValueInput.createByReal(radius), True)
     return fillet.add(filletInput)
 
 
@@ -352,6 +352,48 @@ def createOffsetPlane(target: Occurrence, onFace: BRepFace, offsetVal: float) ->
     planeInput.setByOffset(onFace, ValueInput.createByReal(offsetVal))
     offsetPlane = planes.add(planeInput)
     return offsetPlane
+
+def createPolygon(sketch: Sketch, radius: float, nbSides: int, xOffset: float = 0.0, yOffset: float = 0.0):
+    """
+    Create a polygon shape of nbSides on a sketch
+
+    Args:
+        sketch (Sketch): The sketch object to draw the lines on.
+        radius (float): The radius of polygon. The polygon is created as is would fit in a circle of this radius.
+        nbSides: The number of sides to the polygon, minimum 5.
+
+    Returns:
+        None
+    """
+    if nbSides < 4:
+        futil.log("The minimum number of side is 5 for polygon creaion")
+        return
+
+    edges = ObjectCollection.create()
+
+    points = ObjectCollection.create()
+    r = radius / math.cos(math.pi / nbSides)
+
+    # Ensure the first point starts at the top of the circle for vertical sides
+    # This really depends on the planes it's build on, so for this use case, this is why I'm not using the one in the wall pattern instead
+    offset_angle = math.pi / 2 if nbSides % 2 != 0 else math.pi / nbSides + math.pi / 2
+    for p in range(nbSides):
+        points.add(createPolygonHexPoint(r, nbSides, p, offset_angle, xOffset, yOffset))
+
+    # Connect the points with lines to form the polygon
+    for point in range(nbSides):
+        start_point = points.item(point)
+        end_point = points.item((point + 1) % nbSides)
+        edges.add(sketch.sketchCurves.sketchLines.addByTwoPoints(start_point, end_point))
+
+    return edges
+
+def createPolygonHexPoint(radius: float, nbSides: int, index: int, offset_angle: float, xOffset: float = 0, yOffset: float = 0) -> Point3D:
+    angle = 2 * math.pi * index / nbSides + offset_angle
+    x = math.cos(angle) * radius
+    y = math.sin(angle) * radius
+
+    return Point3D.create(x - xOffset, y - yOffset, 0)
 
 
 def createCylinder(targetOccurence: Occurrence, outerRadius: float, height: float, zOffset=0.0) -> ExtrudeFeatures:

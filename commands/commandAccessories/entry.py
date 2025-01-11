@@ -84,11 +84,13 @@ from ...lib.common.nnws_util import (
     create2PointRectFromPoints,
     createAnchorChamfer,
     createCylinder,
+    createCylinderFromPoint,
     createCylinderFromPointXYPlane,
     createCylinderFromPointXZPlane,
     createExternalThread,
     createNamedComponent,
     createOffsetPlane,
+    createPolygon,
     filletEdges,
     selectFaceAt,
     selectTopFace,
@@ -130,6 +132,7 @@ MENU_MAIN_SCREW = "Main Screw"
 MENU_INSERT = "Base Insert"
 MENU_SHELF = "Shelf Support"
 MENU_SHELF_INSERT = "Shelf Insert"
+MENU_HOOK = "Hook"
 MENU_ANCHOR = "Fastening Anchor"
 MENU_OFFSET_ANCHOR = "Offset Fastening Anchor Set"
 
@@ -167,6 +170,15 @@ MENU_SHELF_INSERT_THICKNESS = "shelf_insert_thickness"
 MENU_SHELF_INSERT_DEPTH = "shelf_insert_depth"
 MENU_SHELF_INSERT_LENGTH = "shelf_insert_length"
 
+MENU_HOOK_GROUP = "hook_group"
+MENU_HOOK_NOTCH = "hook_notch"
+MENU_HOOK_SIZE = "hook_size"
+MENU_HOOK_TRIM_TOP = "hook_trim_top"
+MENU_HOOK_TRIM_BOTTOM = "hook_trim_bottom"
+MENU_HOOK_LENGTH = "hook_height"
+MENU_HOOK_STOPPER = "hook_stopper"
+MENU_HOOK_STOPPER_HEIGHT = "hook_stopper_height"
+
 MENU_ANCHOR_GROUP = "anchor_group"
 MENU_ANCHOR_TOP_OFFSET = "anchor_top_offset"
 MENU_ANCHOR_SCREWTYPE = "anchor_screwtype"
@@ -182,8 +194,10 @@ CMD_Description = "Create NNWS Accessories."
 # Specify that the command will be promoted to the panel.
 IS_PROMOTED = True
 WORKSPACE_ID = "FusionSolidEnvironment"
-PANEL_ID = "SolidCreatePanel"
-COMMAND_BESIDE_ID = ""
+# PANEL_ID = "SolidCreatePanel"
+# COMMAND_BESIDE_ID = ""
+PANEL_ID = 'SolidScriptsAddinsPanel' # for easy testing...
+COMMAND_BESIDE_ID = 'ScriptsManagerCommand'
 
 # Resource location for command icons, here we assume a sub folder in this directory named "resources".
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "")
@@ -248,12 +262,15 @@ def command_created(args: CommandCreatedEventArgs):
     clearanceInput = valueInputMinMax(generalGroup, CLEARANCE_MENU_INPUT, "Clearance", UNIT_MM, MAIN_SCREW_BODY_CLEARANCE_CM, 0, 0.025)
 
     # to easily switch between the different accessories for testing as they are the main development focus
-    insertDefaultVisibility = True
+    # insertDefaultVisibility = True
+    insertDefaultVisibility = False
     accTypeDropdown = generalGroup.children.addDropDownCommandInput(MENU_ACC_DROPDOWN, "Accessorie type", DropDownStyles.LabeledIconDropDownStyle)
     accTypeDropdown.listItems.add(MENU_MAIN_SCREW, False)
     accTypeDropdown.listItems.add(MENU_INSERT, insertDefaultVisibility)
     accTypeDropdown.listItems.add(MENU_SHELF, not insertDefaultVisibility)
     accTypeDropdown.listItems.add(MENU_SHELF_INSERT, False)
+    # accTypeDropdown.listItems.add(MENU_HOOK, False)
+    accTypeDropdown.listItems.add(MENU_HOOK, True)
     accTypeDropdown.listItems.add(MENU_ANCHOR, False)
     accTypeDropdown.listItems.add(MENU_OFFSET_ANCHOR, False)
 
@@ -300,7 +317,8 @@ def command_created(args: CommandCreatedEventArgs):
     valueInputMinMax(shelfGroup, MENU_SHELF_DEPTH, insertDepthMsg, UNIT_MM, 2 * GRIDFINITY_SIZE_CM, MIN_SHELF_SIZE_CM)
     valueInputMinMax(shelfGroup, MENU_SHELF_LENGTH, insertLengthMsg, UNIT_MM, xCount.value * GRIDFINITY_SIZE_CM, MIN_SHELF_SIZE_CM)
     shelfGroup.children.addTextBoxCommandInput(MENU_SHELF_ERROR, "", "", 2, True)
-    shelfGroup.isVisible = not insertDefaultVisibility
+    # shelfGroup.isVisible = not insertDefaultVisibility
+    shelfGroup.isVisible = False
 
     # Shelf Insert Group
     shelfInsertGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_SHELF_INSERT_GROUP, "Shelf Insert Option")
@@ -310,6 +328,16 @@ def command_created(args: CommandCreatedEventArgs):
     valueInputMinMax(shelfInsertGroup, MENU_SHELF_INSERT_DEPTH, insertDepthMsg, UNIT_MM, 2 * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM), MIN_SHELF_SIZE_CM)
     valueInputMinMax(shelfInsertGroup, MENU_SHELF_INSERT_LENGTH, insertLengthMsg, UNIT_MM, xCount.value * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM), MIN_SHELF_SIZE_CM)
     shelfInsertGroup.isVisible = False
+
+    # Hook group
+    hookGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_HOOK_GROUP, "Hook Option")
+    hookGroup.children.addBoolValueInput(MENU_HOOK_NOTCH, "Notch", True, "", True)
+    valueInputMinMax(hookGroup, MENU_HOOK_TRIM_TOP, "Top/Right Width (Trim)", UNIT_MM, getScrewInnerRadius(), 0)
+    valueInputMinMax(hookGroup, MENU_HOOK_TRIM_BOTTOM, "Bottom/Left Width (Trim)", UNIT_MM, ACC_EXTENSION_HEIGTH_CM / 2, 0)
+    valueInputMinMax(hookGroup, MENU_HOOK_SIZE, "Size ( always start from the bottom)", UNIT_MM, ACC_EXTENSION_HEIGTH_CM, 0.75)
+    valueInputMinMax(hookGroup, MENU_HOOK_LENGTH, "Hook Length (From the base of the insert)", UNIT_MM, 7.5, 0)
+    hookGroup.children.addBoolValueInput(MENU_HOOK_STOPPER, "Stopper", True, "", True)
+    valueInputMinMax(hookGroup, MENU_HOOK_STOPPER_HEIGHT, "Stopper Height", UNIT_MM, 0.5, 0)
 
     # Anchor Group
     anchorGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_ANCHOR_GROUP, "Anchor Option")
@@ -358,6 +386,8 @@ def select(selected: DropDownCommandInput, args: CommandEventArgs):
         generateShelf(args)
     elif MENU_SHELF_INSERT == selected:
         generateShelfInsert(args)
+    elif MENU_HOOK == selected:
+        generateHook(args)
     elif MENU_ANCHOR == selected:
         generateAnchor(args)
     elif MENU_OFFSET_ANCHOR == selected:
@@ -392,7 +422,7 @@ def command_input_changed(args: InputChangedEventArgs):
     # 2 steps implementation, first hide all the groups and then show the selected one
     # this is also called when a value input is changed, so we need to check if the selected is not None
     if typeSelection is not None:
-        for group in [MENU_MAIN_SCREW_GROUP, MENU_INSERT_GROUP, MENU_SHELF_GROUP, MENU_SHELF_INSERT_GROUP, MENU_ANCHOR_GROUP]:
+        for group in [MENU_MAIN_SCREW_GROUP, MENU_INSERT_GROUP, MENU_SHELF_GROUP, MENU_SHELF_INSERT_GROUP, MENU_HOOK_GROUP, MENU_ANCHOR_GROUP]:
             args.input.parentCommandInput.commandInputs.itemById(group).isVisible = False
 
     # enable the group for the selected option
@@ -409,6 +439,9 @@ def command_input_changed(args: InputChangedEventArgs):
 
     if MENU_SHELF_INSERT == typeSelection:
         args.input.parentCommandInput.commandInputs.itemById(MENU_SHELF_INSERT_GROUP).isVisible = True
+    
+    if MENU_HOOK == typeSelection:
+        args.input.parentCommandInput.commandInputs.itemById(MENU_HOOK_GROUP).isVisible = True
 
     if MENU_SHELF_X_COUNT == args.input.id:
         xCount = args.input.parentCommandInput.commandInputs.itemById(MENU_SHELF_X_COUNT).value
@@ -474,6 +507,13 @@ def command_validate_input(args: ValidateInputsEventArgs):
         shelfLength = inputs.itemById(MENU_SHELF_INSERT_GROUP).children.itemById(MENU_SHELF_INSERT_LENGTH).value
         args.areInputsValid = shelfThickness >= MIN_SHELF_THICKNESS_CM and shelfDepth >= MIN_SHELF_SIZE_CM and shelfLength >= MIN_SHELF_SIZE_CM
 
+    if inputs.itemById(MENU_HOOK_GROUP).isVisible:
+        topTrim = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_TOP).value
+        bottomTrim = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_BOTTOM).value
+        length = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_LENGTH).value
+        size = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_SIZE).value
+        args.areInputsValid = topTrim > 0 and bottomTrim > 0 and length >= 0 and size <= (topTrim + bottomTrim) and size >= 0.75
+
     if inputs.itemById(MENU_ANCHOR_GROUP).isVisible:
         topOffset = inputs.itemById(MENU_ANCHOR_GROUP).children.itemById(MENU_ANCHOR_TOP_OFFSET).value
         headDiameter = inputs.itemById(MENU_ANCHOR_GROUP).children.itemById(MENU_ANCHOR_HEAD_DIAMETER).value
@@ -500,7 +540,6 @@ def generateShelf(args: CommandEventArgs):
     """
     Generates a shelf, which is a base wall insert with a shelf insert that snap in it.
     """
-    insertOuterRadius = getScrewInnerRadius() - getClearance()
 
     inputs = args.command.commandInputs
     xCount = inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_X_COUNT).value
@@ -516,7 +555,7 @@ def generateShelf(args: CommandEventArgs):
 
 
 def internalGenerateShelf(
-    insertOuterRadius: float, xCount: int, trimTop: float, trimBottom: float, extraSpacing: float, notch: bool, shelfDepth: float, shelfLength: float, invertAxis: bool
+    xCount: int, trimTop: float, trimBottom: float, extraSpacing: float, notch: bool, shelfDepth: float, shelfLength: float, invertAxis: bool
 ):
     # start by genearing the insert
     shelfBaseComponent = generateInsertBase(
@@ -784,9 +823,6 @@ def generateInsert(args: CommandEventArgs):
     Returns:
         None
     """
-
-    insertOuterRadius = getScrewInnerRadius() - getClearance()
-
     inputs = args.command.commandInputs
     insertXCount = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_X_COUNT).value
     insertYCount = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_Y_COUNT).value
@@ -795,11 +831,11 @@ def generateInsert(args: CommandEventArgs):
     extraSpacing = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_EXTRA_SPACING).value
     notch = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_NOTCH).value
     invertAxis = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_INVERSE).value
-    generateInsertBase(MENU_INSERT, insertOuterRadius, trimTop, trimBottom, insertXCount, insertYCount, extraSpacing, notch, invertAxis)
+    generateInsertBase(MENU_INSERT, trimTop, trimBottom, insertXCount, insertYCount, extraSpacing, notch, invertAxis)
 
 
 def generateInsertBase(
-    name: str, insertOuterRadius: float, trimTop: float, trimBottom: float, insertXCount: int, insertYCount: int, extraSpacing: float, generateNotch, invertAxis: bool = False
+    name: str, trimTop: float, trimBottom: float, insertXCount: int, insertYCount: int, extraSpacing: float, generateNotch, invertAxis: bool = False
 ) -> Occurrence:
     """
     Generate the base insert for the accessories.
@@ -820,6 +856,8 @@ def generateInsertBase(
     """
     design = app.activeProduct
     root: Component = Component.cast(design.rootComponent)
+
+    insertOuterRadius = getScrewInnerRadius() - getClearance() - 0.05 # 0.5 to give some space
 
     if trimTop > insertOuterRadius:
         trimTop = insertOuterRadius
@@ -927,6 +965,78 @@ def generateInsertBase(
             patternBodies(insertComponent.component, xAxis, wrapInCollection(insertComponent.bRepBodies.item(0)), insertXCount)
 
     return insertComponent
+
+def generateHook(args: CommandEventArgs):
+ 
+    inputs = args.command.commandInputs
+
+    trimTop = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_TOP).value
+    trimBottom = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_BOTTOM).value
+    notch = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_NOTCH).value
+    length = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_LENGTH).value
+    size = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_SIZE).value
+    
+    addStopper = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_STOPPER).value
+    stopperHeight = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_STOPPER_HEIGHT).value
+
+    # start by genearing the insert
+    baseComponent = generateInsertBase(MENU_HOOK, trimTop, trimBottom, 1, 1, 0, notch, True)
+
+    planeInput: ConstructionPlaneInput = baseComponent.component.constructionPlanes.createInput()
+    zAxisOffset = WALL_INNER_SECTION_OFFSET_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM
+    planeInput.setByOffset(baseComponent.component.xZConstructionPlane, ValueInput.createByReal(zAxisOffset))
+
+    offsetPlane = baseComponent.component.constructionPlanes.add(planeInput)
+    sketches = baseComponent.component.sketches
+    offsetSketch: Sketch = sketches.add(offsetPlane)
+    offsetSketch.name = "Hook"
+
+    xAxisOffset = GRIDFINITY_SIZE_CM / 2
+    centerBottomOffset = -(GRIDFINITY_Z_OFFSET_CM + trimBottom)
+    bottomOffset = centerBottomOffset - trimBottom + size / 2
+    if size > trimBottom * 2:
+        bottomOffset = centerBottomOffset + (size - trimBottom * 2) / 2
+    createPolygon(offsetSketch, size / 2, 8, -xAxisOffset, bottomOffset)
+
+    extrudes = baseComponent.component.features.extrudeFeatures
+    extrude_input = extrudes.createInput(offsetSketch.profiles.item(0), FeatureOperations.NewBodyFeatureOperation)
+    extrude_distance = ValueInput.createByReal(length)
+    extrude_input.setDistanceExtent(False, extrude_distance)
+    hookExtrusion: ExtrudeFeature = extrudes.add(extrude_input)
+
+    if addStopper:
+        stopperPlaneInput: ConstructionPlaneInput = baseComponent.component.constructionPlanes.createInput()
+
+        if size > trimBottom * 2:
+            sizeOffset =  (trimBottom * 2 - size)
+        else:
+            sizeOffset =  -(-trimBottom * 2 + size)
+
+        stopperPlaneInput.setByOffset(baseComponent.component.xYConstructionPlane, ValueInput.createByReal(-GRIDFINITY_Z_OFFSET_CM - sizeOffset))
+        stopperPlane = baseComponent.component.constructionPlanes.add(stopperPlaneInput)
+        sketches = baseComponent.component.sketches
+
+        stopperRadius = (size / 2 - 0.15) / 2
+        stopperCenter = Point3D.create(xAxisOffset, length - stopperRadius - 0.05, 0)
+        stopper = createCylinderFromPoint(stopperPlane.component, stopperRadius, stopperHeight, stopperCenter, stopperPlane)
+
+        for face in stopper.endFaces:
+            for e in face.edges:
+                filletEdges(baseComponent.component, wrapInCollection(e), 0.2 if size > 8 else 0.1)
+
+    # select the edges that match the length, so we know it's the side edges
+    edges = ObjectCollection.create()
+    for face in hookExtrusion.faces:
+        for e in face.edges:
+            if e.length == length and not edges.contains(e):
+                edges.add(e)
+
+    for face in hookExtrusion.endFaces:
+        for e in face.edges:
+            edges.add(e)
+
+    # fillet the collection
+    filletEdges(baseComponent.component, edges, 0.1)
 
 
 def createHexPoint(radius: float, index: int, offset_angle: float) -> Point3D:
