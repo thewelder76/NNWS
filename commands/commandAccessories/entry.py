@@ -194,10 +194,8 @@ CMD_Description = "Create NNWS Accessories."
 # Specify that the command will be promoted to the panel.
 IS_PROMOTED = True
 WORKSPACE_ID = "FusionSolidEnvironment"
-# PANEL_ID = "SolidCreatePanel"
-# COMMAND_BESIDE_ID = ""
-PANEL_ID = 'SolidScriptsAddinsPanel' # for easy testing...
-COMMAND_BESIDE_ID = 'ScriptsManagerCommand'
+PANEL_ID = "SolidCreatePanel"
+COMMAND_BESIDE_ID = ""
 
 # Resource location for command icons, here we assume a sub folder in this directory named "resources".
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "")
@@ -262,15 +260,13 @@ def command_created(args: CommandCreatedEventArgs):
     clearanceInput = valueInputMinMax(generalGroup, CLEARANCE_MENU_INPUT, "Clearance", UNIT_MM, MAIN_SCREW_BODY_CLEARANCE_CM, 0, 0.025)
 
     # to easily switch between the different accessories for testing as they are the main development focus
-    # insertDefaultVisibility = True
-    insertDefaultVisibility = False
+    insertDefaultVisibility = True
     accTypeDropdown = generalGroup.children.addDropDownCommandInput(MENU_ACC_DROPDOWN, "Accessorie type", DropDownStyles.LabeledIconDropDownStyle)
     accTypeDropdown.listItems.add(MENU_MAIN_SCREW, False)
     accTypeDropdown.listItems.add(MENU_INSERT, insertDefaultVisibility)
     accTypeDropdown.listItems.add(MENU_SHELF, not insertDefaultVisibility)
     accTypeDropdown.listItems.add(MENU_SHELF_INSERT, False)
-    # accTypeDropdown.listItems.add(MENU_HOOK, False)
-    accTypeDropdown.listItems.add(MENU_HOOK, True)
+    accTypeDropdown.listItems.add(MENU_HOOK, False)
     accTypeDropdown.listItems.add(MENU_ANCHOR, False)
     accTypeDropdown.listItems.add(MENU_OFFSET_ANCHOR, False)
 
@@ -551,7 +547,7 @@ def generateShelf(args: CommandEventArgs):
     shelfLength = inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_LENGTH).value
     invertAxis = inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_INVERSE).value
 
-    internalGenerateShelf(insertOuterRadius, xCount, trimTop, trimBottom, extraSpacing, notch, shelfDepth, shelfLength, invertAxis)
+    internalGenerateShelf(xCount, trimTop, trimBottom, extraSpacing, notch, shelfDepth, shelfLength, invertAxis)
 
 
 def internalGenerateShelf(
@@ -560,7 +556,6 @@ def internalGenerateShelf(
     # start by genearing the insert
     shelfBaseComponent = generateInsertBase(
         MENU_SHELF,
-        insertOuterRadius,
         trimTop,
         trimBottom,
         xCount,
@@ -842,7 +837,6 @@ def generateInsertBase(
 
     Args:
         name (str): The name of the insert component.
-        insertOuterRadius (float): The outer radius of the insert.
         trimTop (float): The amount to trim from the top of the insert.
         trimBottom (float): The amount to trim from the bottom of the insert.
         insertXCount (int): The number of inserts in the X direction.
