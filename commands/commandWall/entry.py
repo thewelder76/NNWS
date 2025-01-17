@@ -152,7 +152,9 @@ def command_created(args: CommandCreatedEventArgs):
     dimensionGroup.children.addIntegerSpinnerCommandInput(MENU_DIMENSION_WIDTH, "Wall X Count", 1, 99, 1, 2)
     heightInput = dimensionGroup.children.addIntegerSpinnerCommandInput(MENU_DIMENSION_HEIGHT, "Wall Y Count", 1, 99, 1, 2)
     dimensionGroup.children.addBoolValueInput(WALL_NOTCH, "Notch", True, "", True)
-    equalSectionInput: BoolValueCommandInput = dimensionGroup.children.addBoolValueInput(MENU_DIMENSION_STANDARD_WALL_PATTERN, "Standard Wall Pattern", True, "", True)
+    equalSectionInput: BoolValueCommandInput = dimensionGroup.children.addBoolValueInput(
+        MENU_DIMENSION_STANDARD_WALL_PATTERN, "Standard Wall Pattern", True, "", True
+    )
 
     equalSectionInput.isEnabled = heightInput.value > 1
 
@@ -411,7 +413,9 @@ def internalGenerateWall(widthInput: int, heightInput: int, notch: bool, standar
             r = GRIDFINITY_SIZE_CM / 2 / math.cos(math.pi / WALL_NB_SIDES)
 
             startPoint = createHexPoint(r, HexPointIndex.TOP.value, 0, offset_angle)
-            toPoint = createHexPoint(r, HexPointIndex.BOTTOM_LEFT.value if rowIndex % 2 == 0 else HexPointIndex.BOTTOM_RIGHT.value, offset, offset_angle)
+            toPoint = createHexPoint(
+                r, HexPointIndex.BOTTOM_LEFT.value if rowIndex % 2 == 0 else HexPointIndex.BOTTOM_RIGHT.value, offset, offset_angle
+            )
             delta = createDeltaVector(startPoint, toPoint)
             copyBodies(rootComponent, visibleBodyCollection, delta)
             patternBodies(rootComponent, xAxis, visibleBodyCollection, width)
@@ -439,7 +443,9 @@ def createWallSection(rootComponent: Component, notch: bool) -> Occurrence:
     createHollowCylinder(wallComponent.component, outerRadius, WALL_INNER_WALL_OFFSET_CM, WALL_BOTTOM_THICKNESS_CM)
     outerRadius = GRIDFINITY_SIZE_CM / 2 - WALL_OUTER_WALL_THICKNESS_CM - WALL_INNER_WALL_OFFSET_CM
     internalSectionHeight = WALL_THICKNESS_CM - WALL_INNER_SECTION_OFFSET_CM
-    mainWallBodyPart3: ExtrudeFeatures = createHollowCylinder(wallComponent.component, outerRadius, WALL_INNER_WALL_OFFSET_CM, internalSectionHeight)
+    mainWallBodyPart3: ExtrudeFeatures = createHollowCylinder(
+        wallComponent.component, outerRadius, WALL_INNER_WALL_OFFSET_CM, internalSectionHeight
+    )
 
     # Create the Inner Chamfer
     # the chamfer start at 1 mm from the bottom, so we need to calculate the height of the chamfer based on the internal section height and based on the angle of the chamfer

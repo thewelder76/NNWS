@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 140
+
+select = ["F401"]  # Rule for unused imports
+fixable = ["F401"]  # Allow auto-fix for unused imports
+
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
