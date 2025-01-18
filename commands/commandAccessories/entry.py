@@ -453,6 +453,7 @@ def command_created(args: CommandCreatedEventArgs):
     )
     hookGroup.children.addBoolValueInput(MENU_HOOK_STOPPER, "Stopper", True, "", True)
     valueInputMinMax(hookGroup, MENU_HOOK_STOPPER_HEIGHT, "Stopper Height", UNIT_MM, 0.5, 0)
+    hookGroup.isVisible = False
 
     # Anchor Group
     anchorGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_ANCHOR_GROUP, "Anchor Option")
