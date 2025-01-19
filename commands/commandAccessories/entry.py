@@ -291,7 +291,7 @@ def command_created(args: CommandCreatedEventArgs):
         "Height ( Effective Height from bottom of head )",
         UNIT_MM,
         MAIN_SCREW_HEIGHT_CM - MAIN_SCREW_BODY_END_CLEARANCE_CM,
-        MAIN_SCREW_HEIGHT_CM - MAIN_SCREW_BODY_END_CLEARANCE_CM,
+        0.75,
     )
     mainScrewGroup.isVisible = False
 
@@ -383,8 +383,7 @@ def command_created(args: CommandCreatedEventArgs):
         MIN_SHELF_SIZE_CM,
     )
     shelfGroup.children.addTextBoxCommandInput(MENU_SHELF_ERROR, "", "", 2, True)
-    # shelfGroup.isVisible = not insertDefaultVisibility
-    shelfGroup.isVisible = False
+    shelfGroup.isVisible = not insertDefaultVisibility
 
     # Shelf Insert Group
     shelfInsertGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_SHELF_INSERT_GROUP, "Shelf Insert Option")
@@ -587,8 +586,8 @@ def command_input_changed(args: InputChangedEventArgs):
     # enable the group for the selected option
     # Future, was trying ideas with screw height, but not pursuing it for now. Leaving the code here for future reference
     # Still using the value from the input selection though
-    # if MENU_MAIN_SCREW == typeSelection:
-    #     args.input.parentCommandInput.commandInputs.itemById(MENU_MAIN_SCREW_GROUP).isVisible = True
+    if MENU_MAIN_SCREW == typeSelection:
+        args.input.parentCommandInput.commandInputs.itemById(MENU_MAIN_SCREW_GROUP).isVisible = True
 
     if MENU_INSERT == typeSelection:
         args.input.parentCommandInput.commandInputs.itemById(MENU_INSERT_GROUP).isVisible = True
