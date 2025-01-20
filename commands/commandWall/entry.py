@@ -575,5 +575,7 @@ def createNotch(targetOccurence: Occurrence, outerRadius: float, height: float, 
 
     sketch = sketches.add(xz_plane)
     sketch.name = "Notch"
-    sketch.sketchCurves.sketchCircles.addByCenterRadius(Point3D.create(0, -height - NOTCH_SIZE_RADIUS_CM / 2, 0), NOTCH_SIZE_RADIUS_CM)
+    sketch.sketchCurves.sketchCircles.addByCenterRadius(
+        Point3D.create(0, -height - NOTCH_SIZE_RADIUS_CM / 2, 0), NOTCH_SIZE_RADIUS_CM * 1.25
+    )
     circPatternSketch(targetOccurence, operationType, sketch, outerRadius, 8, targetOccurence.zConstructionAxis)
