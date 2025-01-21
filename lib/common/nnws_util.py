@@ -158,12 +158,12 @@ def createExternalThread(targetOccurence: Occurrence, threadStartOffset: float, 
 
     sweepFeature = commonCreateThread(targetOccurence, threadStartOffset, radius, height)
 
+    # 2 long edges over 28cm are the ones connecting the thread to the cilinder
     # hacky, but works, but needs to find a better way for sure. Could do selection on the 2 longest
-    lenghtSelection = 30 * height
+    lenghtSelection = 28 * height
 
     edgeCollection = ObjectCollection.create()
     for edge in sweepFeature.faces.item(0).edges:
-        # 2 long edges over 30cm are the ones connecting the thread to the cilinder
         if edge.length > lenghtSelection:
             edgeCollection.add(edge)
 
