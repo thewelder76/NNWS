@@ -254,14 +254,28 @@ def command_created(args: CommandCreatedEventArgs):
     generalGroup = inputs.addGroupCommandInput(MENU_ACC_GENERAL_SETTINGS, "General Settings")
     generalGroup.children.addBoolValueInput(MENU_GENERAL_PREVIEW, "Preview", True, "", True)
     generalGroup.children.addTextBoxCommandInput(
-        CLEARANCE_MENU_ID, "", "The clearance setting applies to all accessories.\nDefault is " + str(MAIN_SCREW_BODY_CLEARANCE_MM) + " mm", 2, True
+        CLEARANCE_MENU_ID,
+        "",
+        "The clearance setting applies to all accessories.\nDefault is " + str(MAIN_SCREW_BODY_CLEARANCE_MM) + " mm",
+        2,
+        True,
     )
     global clearanceInput
-    clearanceInput = valueInputMinMax(generalGroup, CLEARANCE_MENU_INPUT, "Clearance", UNIT_MM, MAIN_SCREW_BODY_CLEARANCE_CM, 0, 0.025)
+    clearanceInput = valueInputMinMax(
+        generalGroup,
+        CLEARANCE_MENU_INPUT,
+        "Clearance",
+        UNIT_MM,
+        MAIN_SCREW_BODY_CLEARANCE_CM,
+        0,
+        0.025,
+    )
 
     # to easily switch between the different accessories for testing as they are the main development focus
     insertDefaultVisibility = True
-    accTypeDropdown = generalGroup.children.addDropDownCommandInput(MENU_ACC_DROPDOWN, "Accessorie type", DropDownStyles.LabeledIconDropDownStyle)
+    accTypeDropdown = generalGroup.children.addDropDownCommandInput(
+        MENU_ACC_DROPDOWN, "Accessorie type", DropDownStyles.LabeledIconDropDownStyle
+    )
     accTypeDropdown.listItems.add(MENU_MAIN_SCREW, False)
     accTypeDropdown.listItems.add(MENU_INSERT, insertDefaultVisibility)
     accTypeDropdown.listItems.add(MENU_SHELF, not insertDefaultVisibility)
@@ -277,21 +291,42 @@ def command_created(args: CommandCreatedEventArgs):
         "Height ( Effective Height from bottom of head )",
         UNIT_MM,
         MAIN_SCREW_HEIGHT_CM - MAIN_SCREW_BODY_END_CLEARANCE_CM,
-        MAIN_SCREW_HEIGHT_CM - MAIN_SCREW_BODY_END_CLEARANCE_CM,
+        0.75,
     )
     mainScrewGroup.isVisible = False
 
     # Insert Group
     insertGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_INSERT_GROUP, "Base Insert Option")
-    valueInputMinMax(insertGroup, MENU_INSERT_TRIM_TOP, "Top/Right Width (Trim)", UNIT_MM, getScrewInnerRadius(), 0)
+    valueInputMinMax(
+        insertGroup,
+        MENU_INSERT_TRIM_TOP,
+        "Top/Right Width (Trim)",
+        UNIT_MM,
+        getScrewInnerRadius(),
+        0,
+    )
     trimMsg = (
         "The Bottom/Left Trim defaults to the gridfinity based height ("
         + str(GRIDFINITY_BASE_HEIGHT_MM)
         + " mm) / 2. This allow the bottom to be flushed with the based and easily print."
     )
     insertGroup.children.addTextBoxCommandInput(MENU_INSERT_TRIM_BOTTOM_TEXT, "", trimMsg, 3, True)
-    valueInputMinMax(insertGroup, MENU_INSERT_TRIM_BOTTOM, "Bottom/Left Width (Trim)", UNIT_MM, GRIDFINITY_BASE_HEIGHT_CM / 2, 0)
-    valueInputMinMax(insertGroup, MENU_INSERT_EXTRA_SPACING, "Extra Spacing", UNIT_MM, ACC_EXTRA_SPACING_DEFAULT_CM, 0)
+    valueInputMinMax(
+        insertGroup,
+        MENU_INSERT_TRIM_BOTTOM,
+        "Bottom/Left Width (Trim)",
+        UNIT_MM,
+        GRIDFINITY_BASE_HEIGHT_CM / 2,
+        0,
+    )
+    valueInputMinMax(
+        insertGroup,
+        MENU_INSERT_EXTRA_SPACING,
+        "Extra Spacing",
+        UNIT_MM,
+        ACC_EXTRA_SPACING_DEFAULT_CM,
+        0,
+    )
     insertGroup.children.addBoolValueInput(MENU_INSERT_NOTCH, "Notch", True, "", True)
     # TODO not sure that this is as useful as I thought it would be
     insertGroup.children.addBoolValueInput(MENU_INSERT_INVERSE, "Invert the Trim direction", True, "", True)
@@ -304,36 +339,120 @@ def command_created(args: CommandCreatedEventArgs):
 
     # Shelf Group
     shelfGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_SHELF_GROUP, "Shelf Option")
-    valueInputMinMax(shelfGroup, MENU_SHELF_TRIM_TOP, "Top/Right Width (Trim)", UNIT_MM, getScrewInnerRadius(), 0)
-    valueInputMinMax(shelfGroup, MENU_SHELF_TRIM_BOTTOM, "Bottom/Left Width (Trim)", UNIT_MM, ACC_EXTENSION_HEIGTH_CM / 2, 0)
-    valueInputMinMax(shelfGroup, MENU_SHELF_EXTRA_SPACING, "Extra Spacing", UNIT_MM, ACC_EXTRA_SPACING_DEFAULT_CM, 0)
+    valueInputMinMax(
+        shelfGroup,
+        MENU_SHELF_TRIM_TOP,
+        "Top/Right Width (Trim)",
+        UNIT_MM,
+        getScrewInnerRadius(),
+        0,
+    )
+    valueInputMinMax(
+        shelfGroup,
+        MENU_SHELF_TRIM_BOTTOM,
+        "Bottom/Left Width (Trim)",
+        UNIT_MM,
+        ACC_EXTENSION_HEIGTH_CM / 2,
+        0,
+    )
+    valueInputMinMax(
+        shelfGroup,
+        MENU_SHELF_EXTRA_SPACING,
+        "Extra Spacing",
+        UNIT_MM,
+        ACC_EXTRA_SPACING_DEFAULT_CM,
+        0,
+    )
     shelfGroup.children.addBoolValueInput(MENU_SHELF_NOTCH, "Notch", True, "", True)
     shelfGroup.children.addBoolValueInput(MENU_SHELF_INVERSE, "Invert the Trim direction", True, "", True)
     xCount = shelfGroup.children.addIntegerSpinnerCommandInput(MENU_SHELF_X_COUNT, "Insert X Count", 1, 5, 1, 2)
-    valueInputMinMax(shelfGroup, MENU_SHELF_DEPTH, insertDepthMsg, UNIT_MM, 2 * GRIDFINITY_SIZE_CM, MIN_SHELF_SIZE_CM)
-    valueInputMinMax(shelfGroup, MENU_SHELF_LENGTH, insertLengthMsg, UNIT_MM, xCount.value * GRIDFINITY_SIZE_CM, MIN_SHELF_SIZE_CM)
+    valueInputMinMax(
+        shelfGroup,
+        MENU_SHELF_DEPTH,
+        insertDepthMsg,
+        UNIT_MM,
+        2 * GRIDFINITY_SIZE_CM,
+        MIN_SHELF_SIZE_CM,
+    )
+    valueInputMinMax(
+        shelfGroup,
+        MENU_SHELF_LENGTH,
+        insertLengthMsg,
+        UNIT_MM,
+        xCount.value * GRIDFINITY_SIZE_CM,
+        MIN_SHELF_SIZE_CM,
+    )
     shelfGroup.children.addTextBoxCommandInput(MENU_SHELF_ERROR, "", "", 2, True)
-    # shelfGroup.isVisible = not insertDefaultVisibility
-    shelfGroup.isVisible = False
+    shelfGroup.isVisible = not insertDefaultVisibility
 
     # Shelf Insert Group
     shelfInsertGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_SHELF_INSERT_GROUP, "Shelf Insert Option")
     shelfInsertGroup.children.addBoolValueInput(MENU_SHELF_INSERT_NOTCH, "Notch", True, "", True)
     insertThicknessMsg = "Shelf Thickness, min " + str(MIN_SHELF_THICKNESS_CM) + " mm"
-    valueInputMinMax(shelfInsertGroup, MENU_SHELF_INSERT_THICKNESS, insertThicknessMsg, UNIT_MM, MIN_SHELF_THICKNESS_CM, MIN_SHELF_THICKNESS_CM)
-    valueInputMinMax(shelfInsertGroup, MENU_SHELF_INSERT_DEPTH, insertDepthMsg, UNIT_MM, 2 * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM), MIN_SHELF_SIZE_CM)
-    valueInputMinMax(shelfInsertGroup, MENU_SHELF_INSERT_LENGTH, insertLengthMsg, UNIT_MM, xCount.value * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM), MIN_SHELF_SIZE_CM)
+    valueInputMinMax(
+        shelfInsertGroup,
+        MENU_SHELF_INSERT_THICKNESS,
+        insertThicknessMsg,
+        UNIT_MM,
+        MIN_SHELF_THICKNESS_CM,
+        MIN_SHELF_THICKNESS_CM,
+    )
+    valueInputMinMax(
+        shelfInsertGroup,
+        MENU_SHELF_INSERT_DEPTH,
+        insertDepthMsg,
+        UNIT_MM,
+        2 * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM),
+        MIN_SHELF_SIZE_CM,
+    )
+    valueInputMinMax(
+        shelfInsertGroup,
+        MENU_SHELF_INSERT_LENGTH,
+        insertLengthMsg,
+        UNIT_MM,
+        xCount.value * (GRIDFINITY_SIZE_CM - ACC_LEDGER_WIDTH_CM),
+        MIN_SHELF_SIZE_CM,
+    )
     shelfInsertGroup.isVisible = False
 
     # Hook group
     hookGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_HOOK_GROUP, "Hook Option")
     hookGroup.children.addBoolValueInput(MENU_HOOK_NOTCH, "Notch", True, "", True)
-    valueInputMinMax(hookGroup, MENU_HOOK_TRIM_TOP, "Top/Right Width (Trim)", UNIT_MM, getScrewInnerRadius(), 0)
-    valueInputMinMax(hookGroup, MENU_HOOK_TRIM_BOTTOM, "Bottom/Left Width (Trim)", UNIT_MM, ACC_EXTENSION_HEIGTH_CM / 2, 0)
-    valueInputMinMax(hookGroup, MENU_HOOK_SIZE, "Size ( always start from the bottom)", UNIT_MM, ACC_EXTENSION_HEIGTH_CM, 0.75)
-    valueInputMinMax(hookGroup, MENU_HOOK_LENGTH, "Hook Length (From the base of the insert)", UNIT_MM, 7.5, 0)
+    valueInputMinMax(
+        hookGroup,
+        MENU_HOOK_TRIM_TOP,
+        "Top/Right Width (Trim)",
+        UNIT_MM,
+        getScrewInnerRadius(),
+        0,
+    )
+    valueInputMinMax(
+        hookGroup,
+        MENU_HOOK_TRIM_BOTTOM,
+        "Bottom/Left Width (Trim)",
+        UNIT_MM,
+        ACC_EXTENSION_HEIGTH_CM / 2,
+        0,
+    )
+    valueInputMinMax(
+        hookGroup,
+        MENU_HOOK_SIZE,
+        "Size ( always start from the bottom)",
+        UNIT_MM,
+        ACC_EXTENSION_HEIGTH_CM,
+        0.75,
+    )
+    valueInputMinMax(
+        hookGroup,
+        MENU_HOOK_LENGTH,
+        "Hook Length (From the base of the insert)",
+        UNIT_MM,
+        7.5,
+        0,
+    )
     hookGroup.children.addBoolValueInput(MENU_HOOK_STOPPER, "Stopper", True, "", True)
     valueInputMinMax(hookGroup, MENU_HOOK_STOPPER_HEIGHT, "Stopper Height", UNIT_MM, 0.5, 0)
+    hookGroup.isVisible = False
 
     # Anchor Group
     anchorGroup: GroupCommandInput = inputs.addGroupCommandInput(MENU_ANCHOR_GROUP, "Anchor Option")
@@ -347,21 +466,55 @@ def command_created(args: CommandCreatedEventArgs):
         0,
         WALL_THICKNESS_CM - WALL_INNER_SECTION_OFFSET_CM - ACC_ANCHOR_TOP_OFFSET_CM,
     )
-    anchorGroup.children.addDropDownCommandInput(MENU_ANCHOR_SCREWTYPE, "Screw/Bolt type", DropDownStyles.LabeledIconDropDownStyle)
+    anchorGroup.children.addDropDownCommandInput(
+        MENU_ANCHOR_SCREWTYPE,
+        "Screw/Bolt type",
+        DropDownStyles.LabeledIconDropDownStyle,
+    )
     defaultSelectedScrew = ScrewDefinitionsEnum.M5
     for screwType in ScrewDefinitionsEnum.list():
-        anchorGroup.children.itemById(MENU_ANCHOR_SCREWTYPE).listItems.add(screwType.displayName, screwType.displayName == defaultSelectedScrew.value.displayName)
+        anchorGroup.children.itemById(MENU_ANCHOR_SCREWTYPE).listItems.add(
+            screwType.displayName,
+            screwType.displayName == defaultSelectedScrew.value.displayName,
+        )
     anchorGroup.children.itemById(MENU_ANCHOR_SCREWTYPE).listItems.add(MENU_ANCHOR_SCREWTYPE_CUSTOM, False)
     # display the hole size for the selected screw and let custom selection
-    valueInputMinMax(anchorGroup, MENU_ANCHOR_HEAD_DIAMETER, "Head Diameter", UNIT_MM, defaultSelectedScrew.value.headDiameter, MAIN_SCREW_BODY_CLEARANCE_CM)
-    valueInputMinMax(anchorGroup, MENU_ANCHOR_COUNTERSINK_ANGLE, "Countersink Angle", UNIT_DEG, defaultSelectedScrew.value.countersinkAngle, 1, 179)
-    valueInputMinMax(anchorGroup, MENU_ANCHOR_HOLE_DIAMETER, "Hole Diameter", UNIT_MM, defaultSelectedScrew.value.holeDiameter, MAIN_SCREW_BODY_CLEARANCE_CM, 10)
+    valueInputMinMax(
+        anchorGroup,
+        MENU_ANCHOR_HEAD_DIAMETER,
+        "Head Diameter",
+        UNIT_MM,
+        defaultSelectedScrew.value.headDiameter,
+        MAIN_SCREW_BODY_CLEARANCE_CM,
+    )
+    valueInputMinMax(
+        anchorGroup,
+        MENU_ANCHOR_COUNTERSINK_ANGLE,
+        "Countersink Angle",
+        UNIT_DEG,
+        defaultSelectedScrew.value.countersinkAngle,
+        1,
+        179,
+    )
+    valueInputMinMax(
+        anchorGroup,
+        MENU_ANCHOR_HOLE_DIAMETER,
+        "Hole Diameter",
+        UNIT_MM,
+        defaultSelectedScrew.value.holeDiameter,
+        MAIN_SCREW_BODY_CLEARANCE_CM,
+        10,
+    )
     anchorGroup.isVisible = False
 
     futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)
     futil.add_handler(args.command.inputChanged, command_input_changed, local_handlers=local_handlers)
     futil.add_handler(args.command.executePreview, command_preview, local_handlers=local_handlers)
-    futil.add_handler(args.command.validateInputs, command_validate_input, local_handlers=local_handlers)
+    futil.add_handler(
+        args.command.validateInputs,
+        command_validate_input,
+        local_handlers=local_handlers,
+    )
     futil.add_handler(args.command.destroy, command_destroy, local_handlers=local_handlers)
 
 
@@ -412,20 +565,29 @@ def command_input_changed(args: InputChangedEventArgs):
         if args.input.id == MENU_ANCHOR_SCREWTYPE and args.input.selectedItem.name != MENU_ANCHOR_SCREWTYPE_CUSTOM:
             screwDefinition = ScrewDefinitionsEnum.byName(args.input.selectedItem.name)
             args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_HEAD_DIAMETER).value = screwDefinition.headDiameter
-            args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_COUNTERSINK_ANGLE).value = math.radians(screwDefinition.countersinkAngle)
+            args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_COUNTERSINK_ANGLE).value = math.radians(
+                screwDefinition.countersinkAngle
+            )
             args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_HOLE_DIAMETER).value = screwDefinition.holeDiameter
 
     # 2 steps implementation, first hide all the groups and then show the selected one
     # this is also called when a value input is changed, so we need to check if the selected is not None
     if typeSelection is not None:
-        for group in [MENU_MAIN_SCREW_GROUP, MENU_INSERT_GROUP, MENU_SHELF_GROUP, MENU_SHELF_INSERT_GROUP, MENU_HOOK_GROUP, MENU_ANCHOR_GROUP]:
+        for group in [
+            MENU_MAIN_SCREW_GROUP,
+            MENU_INSERT_GROUP,
+            MENU_SHELF_GROUP,
+            MENU_SHELF_INSERT_GROUP,
+            MENU_HOOK_GROUP,
+            MENU_ANCHOR_GROUP,
+        ]:
             args.input.parentCommandInput.commandInputs.itemById(group).isVisible = False
 
     # enable the group for the selected option
     # Future, was trying ideas with screw height, but not pursuing it for now. Leaving the code here for future reference
     # Still using the value from the input selection though
-    # if MENU_MAIN_SCREW == typeSelection:
-    #     args.input.parentCommandInput.commandInputs.itemById(MENU_MAIN_SCREW_GROUP).isVisible = True
+    if MENU_MAIN_SCREW == typeSelection:
+        args.input.parentCommandInput.commandInputs.itemById(MENU_MAIN_SCREW_GROUP).isVisible = True
 
     if MENU_INSERT == typeSelection:
         args.input.parentCommandInput.commandInputs.itemById(MENU_INSERT_GROUP).isVisible = True
@@ -435,7 +597,7 @@ def command_input_changed(args: InputChangedEventArgs):
 
     if MENU_SHELF_INSERT == typeSelection:
         args.input.parentCommandInput.commandInputs.itemById(MENU_SHELF_INSERT_GROUP).isVisible = True
-    
+
     if MENU_HOOK == typeSelection:
         args.input.parentCommandInput.commandInputs.itemById(MENU_HOOK_GROUP).isVisible = True
 
@@ -447,7 +609,11 @@ def command_input_changed(args: InputChangedEventArgs):
         args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_GROUP).isVisible = True
 
     # select the Custom option when the user any of the screw inputs
-    if MENU_ANCHOR_HEAD_DIAMETER == args.input.id or MENU_ANCHOR_COUNTERSINK_ANGLE == args.input.id or MENU_ANCHOR_HOLE_DIAMETER == args.input.id:
+    if (
+        MENU_ANCHOR_HEAD_DIAMETER == args.input.id
+        or MENU_ANCHOR_COUNTERSINK_ANGLE == args.input.id
+        or MENU_ANCHOR_HOLE_DIAMETER == args.input.id
+    ):
         args.input.parentCommandInput.commandInputs.itemById(MENU_ANCHOR_SCREWTYPE).listItems[-1].isSelected = True
 
 
@@ -491,17 +657,23 @@ def command_validate_input(args: ValidateInputsEventArgs):
         numFits = int(shelfLength // GRIDFINITY_SIZE_CM)
         sideWidth = (shelfLength - max(xCount - 1, numFits - 1) * GRIDFINITY_SIZE_CM) / 2
         if sideWidth < 0.75:
-            inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_ERROR).text = "The shelf is too small for the number of inserts, could not calculate fillet."
+            inputs.itemById(MENU_SHELF_GROUP).children.itemById(
+                MENU_SHELF_ERROR
+            ).text = "The shelf is too small for the number of inserts, could not calculate fillet."
         else:  # clear the error
             inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_ERROR).text = ""
 
-        args.areInputsValid = topTrim > 0 and bottomTrim > 0 and extraSpacing >= 0 and shelfDepth >= MIN_SHELF_SIZE_CM and shelfLength >= MIN_SHELF_SIZE_CM
+        args.areInputsValid = (
+            topTrim > 0 and bottomTrim > 0 and extraSpacing >= 0 and shelfDepth >= MIN_SHELF_SIZE_CM and shelfLength >= MIN_SHELF_SIZE_CM
+        )
 
     if inputs.itemById(MENU_SHELF_INSERT_GROUP).isVisible:
         shelfThickness = inputs.itemById(MENU_SHELF_INSERT_GROUP).children.itemById(MENU_SHELF_INSERT_THICKNESS).value
         shelfDepth = inputs.itemById(MENU_SHELF_INSERT_GROUP).children.itemById(MENU_SHELF_INSERT_DEPTH).value
         shelfLength = inputs.itemById(MENU_SHELF_INSERT_GROUP).children.itemById(MENU_SHELF_INSERT_LENGTH).value
-        args.areInputsValid = shelfThickness >= MIN_SHELF_THICKNESS_CM and shelfDepth >= MIN_SHELF_SIZE_CM and shelfLength >= MIN_SHELF_SIZE_CM
+        args.areInputsValid = (
+            shelfThickness >= MIN_SHELF_THICKNESS_CM and shelfDepth >= MIN_SHELF_SIZE_CM and shelfLength >= MIN_SHELF_SIZE_CM
+        )
 
     if inputs.itemById(MENU_HOOK_GROUP).isVisible:
         topTrim = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_TOP).value
@@ -547,11 +719,27 @@ def generateShelf(args: CommandEventArgs):
     shelfLength = inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_LENGTH).value
     invertAxis = inputs.itemById(MENU_SHELF_GROUP).children.itemById(MENU_SHELF_INVERSE).value
 
-    internalGenerateShelf(xCount, trimTop, trimBottom, extraSpacing, notch, shelfDepth, shelfLength, invertAxis)
+    internalGenerateShelf(
+        xCount,
+        trimTop,
+        trimBottom,
+        extraSpacing,
+        notch,
+        shelfDepth,
+        shelfLength,
+        invertAxis,
+    )
 
 
 def internalGenerateShelf(
-    xCount: int, trimTop: float, trimBottom: float, extraSpacing: float, notch: bool, shelfDepth: float, shelfLength: float, invertAxis: bool
+    xCount: int,
+    trimTop: float,
+    trimBottom: float,
+    extraSpacing: float,
+    notch: bool,
+    shelfDepth: float,
+    shelfLength: float,
+    invertAxis: bool,
 ):
     # start by genearing the insert
     shelfBaseComponent = generateInsertBase(
@@ -567,7 +755,10 @@ def internalGenerateShelf(
 
     planeInput: ConstructionPlaneInput = shelfBaseComponent.component.constructionPlanes.createInput()
     bottomOffset = trimBottom + GRIDFINITY_BASE_HEIGHT_CM / 2 + GRIDFINITY_Z_OFFSET_CM
-    planeInput.setByOffset(shelfBaseComponent.component.xYConstructionPlane, ValueInput.createByReal(-bottomOffset))
+    planeInput.setByOffset(
+        shelfBaseComponent.component.xYConstructionPlane,
+        ValueInput.createByReal(-bottomOffset),
+    )
 
     offsetPlane = shelfBaseComponent.component.constructionPlanes.add(planeInput)
     sketches = shelfBaseComponent.component.sketches
@@ -578,11 +769,15 @@ def internalGenerateShelf(
     numFits = int(shelfLength // GRIDFINITY_SIZE_CM)
     sideWidth = (shelfLength - max(xCount - 1, numFits - 1) * GRIDFINITY_SIZE_CM) / 2
 
-    xAxisOffset = GRIDFINITY_SIZE_CM / 2  # because of the adjustment made to match the gridfinity generator, the base insert uses the same code
+    xAxisOffset = (
+        GRIDFINITY_SIZE_CM / 2
+    )  # because of the adjustment made to match the gridfinity generator, the base insert uses the same code
     x1 = -sideWidth + xAxisOffset
     x2 = max(xCount - 1, numFits - 1) * GRIDFINITY_SIZE_CM + sideWidth + xAxisOffset
     y2 = shelfDepth
-    rectangle: SketchLineList = offsetSketch.sketchCurves.sketchLines.addTwoPointRectangle(Point3D.create(x1, 0, 0), Point3D.create(x2, y2, 0))
+    rectangle: SketchLineList = offsetSketch.sketchCurves.sketchLines.addTwoPointRectangle(
+        Point3D.create(x1, 0, 0), Point3D.create(x2, y2, 0)
+    )
 
     ledgeOffset = ACC_LEDGER_WIDTH_CM
     holeOffset = ledgeOffset + ACC_SHELF_WIDTH_CM - ACC_LEDGER_WIDTH_CM
@@ -601,7 +796,11 @@ def internalGenerateShelf(
             )
 
     shelfThikness = GRIDFINITY_BASE_HEIGHT_CM
-    shelfBaseComponent.component.features.extrudeFeatures.addSimple(offsetSketch.profiles.item(0), ValueInput.createByReal(shelfThikness), FeatureOperations.JoinFeatureOperation)
+    shelfBaseComponent.component.features.extrudeFeatures.addSimple(
+        offsetSketch.profiles.item(0),
+        ValueInput.createByReal(shelfThikness),
+        FeatureOperations.JoinFeatureOperation,
+    )
     holeSketch: Sketch = sketches.add(offsetPlane)
 
     rectWithFillet(
@@ -614,20 +813,44 @@ def internalGenerateShelf(
         0,
         ACC_INTERNAL_SKETCH_RADIUS_CM,
     )
-    shelfBaseComponent.component.features.extrudeFeatures.addSimple(holeSketch.profiles.item(0), ValueInput.createByReal(shelfThikness), FeatureOperations.CutFeatureOperation)
+    shelfBaseComponent.component.features.extrudeFeatures.addSimple(
+        holeSketch.profiles.item(0),
+        ValueInput.createByReal(shelfThikness),
+        FeatureOperations.CutFeatureOperation,
+    )
 
     ledgeSketch: Sketch = sketches.add(offsetPlane)
     ledgeSketch.name = "Shelf Ledge"
     ledgeRadius = ACC_SHELF_WIDTH_CM - ACC_LEDGER_WIDTH_CM + ACC_INTERNAL_SKETCH_RADIUS_CM
-    rectWithFillet(ledgeSketch, x1 + ledgeOffset, ledgeOffset, shelfThikness / 2, x2 - ledgeOffset, y2 - ledgeOffset, shelfThikness / 2, ledgeRadius)
-    shelfBaseComponent.component.features.extrudeFeatures.addSimple(ledgeSketch.profiles.item(0), ValueInput.createByReal(shelfThikness / 2), FeatureOperations.CutFeatureOperation)
+    rectWithFillet(
+        ledgeSketch,
+        x1 + ledgeOffset,
+        ledgeOffset,
+        shelfThikness / 2,
+        x2 - ledgeOffset,
+        y2 - ledgeOffset,
+        shelfThikness / 2,
+        ledgeRadius,
+    )
+    shelfBaseComponent.component.features.extrudeFeatures.addSimple(
+        ledgeSketch.profiles.item(0),
+        ValueInput.createByReal(shelfThikness / 2),
+        FeatureOperations.CutFeatureOperation,
+    )
 
     # creating a sketch to path the notch
     ledgeNotchSketch: Sketch = sketches.add(offsetPlane)
     ledgeNotchSketch.name = "Ledge Notch"
     notchOffset = NOTCH_SIZE_RADIUS_CM
     ledgeLines = rectWithFillet(
-        ledgeNotchSketch, x1 + ledgeOffset, ledgeOffset, shelfThikness / 2 + notchOffset, x2 - ledgeOffset, y2 - ledgeOffset, shelfThikness / 2 + notchOffset, ledgeRadius
+        ledgeNotchSketch,
+        x1 + ledgeOffset,
+        ledgeOffset,
+        shelfThikness / 2 + notchOffset,
+        x2 - ledgeOffset,
+        y2 - ledgeOffset,
+        shelfThikness / 2 + notchOffset,
+        ledgeRadius,
     )
 
     startPoint: SketchLine = ledgeNotchSketch.sketchCurves.sketchLines.item(0)
@@ -652,7 +875,11 @@ def internalGenerateShelf(
     sweepFeature.name = "Shelf Notch"
 
     tf = selectFaceAt(shelfBaseComponent.component, offsetPlane, -EXTERNAL_TOLERANCE_CM)
-    bf = selectFaceAt(shelfBaseComponent.component, offsetPlane, -shelfThikness - EXTERNAL_TOLERANCE_CM)
+    bf = selectFaceAt(
+        shelfBaseComponent.component,
+        offsetPlane,
+        -shelfThikness - EXTERNAL_TOLERANCE_CM,
+    )
 
     toFillet = ObjectCollection.create()
     for e in tf.edges:
@@ -671,15 +898,36 @@ def internalGenerateShelf(
     offsetFromSide = 0.525
     lenTextPositionStart = Point3D.create(x1, offsetFromSide, 0)
     lenTextPositionEnd = Point3D.create(-shelfLength - x1, offsetFromSide, 0)
-    embossText(shelfBaseComponent.component, textSketch, lenText, lenTextPositionStart, lenTextPositionEnd, -0.05)
+    embossText(
+        shelfBaseComponent.component,
+        textSketch,
+        lenText,
+        lenTextPositionStart,
+        lenTextPositionEnd,
+        -0.05,
+    )
 
     deptText = f"D {((shelfDepth - 0.8 - EXTERNAL_TOLERANCE_CM) * 10):05.2f} mm"
     depthTextPositionStart = Point3D.create(-offsetFromSide - x1, 0, 0)
     depthTextPositionEnd = Point3D.create(-offsetFromSide - x1, shelfDepth, 0)
-    embossText(shelfBaseComponent.component, textSketch, deptText, depthTextPositionStart, depthTextPositionEnd, -0.05)
+    embossText(
+        shelfBaseComponent.component,
+        textSketch,
+        deptText,
+        depthTextPositionStart,
+        depthTextPositionEnd,
+        -0.05,
+    )
 
 
-def embossText(targetOccurence: Occurrence, sketch: Sketch, text: str, start: Point3D, end: Point3D, embossHeight: float):
+def embossText(
+    targetOccurence: Occurrence,
+    sketch: Sketch,
+    text: str,
+    start: Point3D,
+    end: Point3D,
+    embossHeight: float,
+):
     """
     Embosses the given text along a path in a sketch.
 
@@ -702,10 +950,23 @@ def embossText(targetOccurence: Occurrence, sketch: Sketch, text: str, start: Po
     input.setAsAlongPath(path, False, HorizontalAlignments.CenterHorizontalAlignment, 50)
     input.fontName = "Arial"
     textSketch = texts.add(input)
-    return targetOccurence.features.extrudeFeatures.addSimple(textSketch, ValueInput.createByReal(embossHeight), FeatureOperations.CutFeatureOperation)
+    return targetOccurence.features.extrudeFeatures.addSimple(
+        textSketch,
+        ValueInput.createByReal(embossHeight),
+        FeatureOperations.CutFeatureOperation,
+    )
 
 
-def rectWithFillet(sketch: Sketch, x1: float, y1: float, z1: float, x2: float, y2: float, z2: float, filletRadius: float) -> ObjectCollection:
+def rectWithFillet(
+    sketch: Sketch,
+    x1: float,
+    y1: float,
+    z1: float,
+    x2: float,
+    y2: float,
+    z2: float,
+    filletRadius: float,
+) -> ObjectCollection:
     """
     Creates a rectangle with fillet corners in a given sketch.
 
@@ -731,7 +992,11 @@ def rectWithFillet(sketch: Sketch, x1: float, y1: float, z1: float, x2: float, y
 
     for l in range(0, rect.count):
         arc = sketch.sketchCurves.sketchArcs.addFillet(
-            rect.item(l), rect.item(l).startSketchPoint.geometry, rect.item((l + 1) % rect.count), rect.item((l + 1) % rect.count).endSketchPoint.geometry, filletRadius
+            rect.item(l),
+            rect.item(l).startSketchPoint.geometry,
+            rect.item((l + 1) % rect.count),
+            rect.item((l + 1) % rect.count).endSketchPoint.geometry,
+            filletRadius,
         )
         lines.add(arc)
 
@@ -763,8 +1028,21 @@ def generateShelfInsert(args: CommandEventArgs):
     xy_plane = shelfInsertComponent.component.xYConstructionPlane
     sketch = sketches.add(xy_plane)
 
-    rectWithFillet(sketch, 0, 0, 0, shelfLength - getClearance(), shelfDepth - getClearance(), 0, ACC_SHELF_WIDTH_CM - ACC_LEDGER_WIDTH_CM + ACC_INTERNAL_SKETCH_RADIUS_CM)
-    shelfInsertComponent.component.features.extrudeFeatures.addSimple(sketch.profiles.item(0), ValueInput.createByReal(thickness), FeatureOperations.JoinFeatureOperation)
+    rectWithFillet(
+        sketch,
+        0,
+        0,
+        0,
+        shelfLength - getClearance(),
+        shelfDepth - getClearance(),
+        0,
+        ACC_SHELF_WIDTH_CM - ACC_LEDGER_WIDTH_CM + ACC_INTERNAL_SKETCH_RADIUS_CM,
+    )
+    shelfInsertComponent.component.features.extrudeFeatures.addSimple(
+        sketch.profiles.item(0),
+        ValueInput.createByReal(thickness),
+        FeatureOperations.JoinFeatureOperation,
+    )
 
     face: BRepFace = selectTopFace(shelfInsertComponent.component, xy_plane)
     edgeToFillet = ObjectCollection.create()
@@ -784,24 +1062,60 @@ def generateShelfInsert(args: CommandEventArgs):
         # notch
         notchSketchXZ: Sketch = sketches.add(shelfInsertComponent.component.xZConstructionPlane)
         notchSketchCenter1 = Point3D.create(0, -NOTCH_SIZE_RADIUS_CM + getClearance(), 0.5)
-        notchSketchCenter2 = Point3D.create(0, -NOTCH_SIZE_RADIUS_CM + getClearance(), shelfDepth - 0.5 - NOTCH_SIZE_RADIUS_CM * 2)
+        notchSketchCenter2 = Point3D.create(
+            0,
+            -NOTCH_SIZE_RADIUS_CM + getClearance(),
+            shelfDepth - 0.5 - NOTCH_SIZE_RADIUS_CM * 2,
+        )
         notchSketchXZ.name = "Notch"
 
         notchSketchXZ.sketchCurves.sketchCircles.addByCenterRadius(notchSketchCenter1, NOTCH_SIZE_RADIUS_CM - getClearance())
-        circPatternSketch(shelfInsertComponent.component, FeatureOperations.JoinFeatureOperation, notchSketchXZ, NOTCH_SIZE_RADIUS_CM * 2, 2, axisLine)
+        circPatternSketch(
+            shelfInsertComponent.component,
+            FeatureOperations.JoinFeatureOperation,
+            notchSketchXZ,
+            NOTCH_SIZE_RADIUS_CM * 2,
+            2,
+            axisLine,
+        )
         notchSketchXZ.sketchCurves.sketchCircles.addByCenterRadius(notchSketchCenter2, NOTCH_SIZE_RADIUS_CM - getClearance())
-        circPatternSketch(shelfInsertComponent.component, FeatureOperations.JoinFeatureOperation, notchSketchXZ, NOTCH_SIZE_RADIUS_CM * 2, 2, axisLine)
+        circPatternSketch(
+            shelfInsertComponent.component,
+            FeatureOperations.JoinFeatureOperation,
+            notchSketchXZ,
+            NOTCH_SIZE_RADIUS_CM * 2,
+            2,
+            axisLine,
+        )
 
         # notch
         notchSketchYZ: Sketch = sketches.add(shelfInsertComponent.component.yZConstructionPlane)
         notchSketchCenter1 = Point3D.create(-NOTCH_SIZE_RADIUS_CM + getClearance(), 0, 0.5)
-        notchSketchCenter2 = Point3D.create(-NOTCH_SIZE_RADIUS_CM + getClearance(), 0, shelfLength - 0.5 - NOTCH_SIZE_RADIUS_CM * 2)
+        notchSketchCenter2 = Point3D.create(
+            -NOTCH_SIZE_RADIUS_CM + getClearance(),
+            0,
+            shelfLength - 0.5 - NOTCH_SIZE_RADIUS_CM * 2,
+        )
         notchSketchYZ.name = "Notch"
 
         notchSketchYZ.sketchCurves.sketchCircles.addByCenterRadius(notchSketchCenter1, NOTCH_SIZE_RADIUS_CM - getClearance())
-        circPatternSketch(shelfInsertComponent.component, FeatureOperations.JoinFeatureOperation, notchSketchYZ, NOTCH_SIZE_RADIUS_CM * 2, 2, axisLine)
+        circPatternSketch(
+            shelfInsertComponent.component,
+            FeatureOperations.JoinFeatureOperation,
+            notchSketchYZ,
+            NOTCH_SIZE_RADIUS_CM * 2,
+            2,
+            axisLine,
+        )
         notchSketchYZ.sketchCurves.sketchCircles.addByCenterRadius(notchSketchCenter2, NOTCH_SIZE_RADIUS_CM - getClearance())
-        circPatternSketch(shelfInsertComponent.component, FeatureOperations.JoinFeatureOperation, notchSketchYZ, NOTCH_SIZE_RADIUS_CM * 2, 2, axisLine)
+        circPatternSketch(
+            shelfInsertComponent.component,
+            FeatureOperations.JoinFeatureOperation,
+            notchSketchYZ,
+            NOTCH_SIZE_RADIUS_CM * 2,
+            2,
+            axisLine,
+        )
 
         axisLine.deleteMe()
 
@@ -826,11 +1140,27 @@ def generateInsert(args: CommandEventArgs):
     extraSpacing = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_EXTRA_SPACING).value
     notch = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_NOTCH).value
     invertAxis = inputs.itemById(MENU_INSERT_GROUP).children.itemById(MENU_INSERT_INVERSE).value
-    generateInsertBase(MENU_INSERT, trimTop, trimBottom, insertXCount, insertYCount, extraSpacing, notch, invertAxis)
+    generateInsertBase(
+        MENU_INSERT,
+        trimTop,
+        trimBottom,
+        insertXCount,
+        insertYCount,
+        extraSpacing,
+        notch,
+        invertAxis,
+    )
 
 
 def generateInsertBase(
-    name: str, trimTop: float, trimBottom: float, insertXCount: int, insertYCount: int, extraSpacing: float, generateNotch, invertAxis: bool = False
+    name: str,
+    trimTop: float,
+    trimBottom: float,
+    insertXCount: int,
+    insertYCount: int,
+    extraSpacing: float,
+    generateNotch,
+    invertAxis: bool = False,
 ) -> Occurrence:
     """
     Generate the base insert for the accessories.
@@ -851,7 +1181,7 @@ def generateInsertBase(
     design = app.activeProduct
     root: Component = Component.cast(design.rootComponent)
 
-    insertOuterRadius = getScrewInnerRadius() - getClearance() - 0.05 # 0.5 to give some space
+    insertOuterRadius = getScrewInnerRadius() - getClearance() - 0.05  # 0.5 to give some space
 
     if trimTop > insertOuterRadius:
         trimTop = insertOuterRadius
@@ -864,8 +1194,12 @@ def generateInsertBase(
     # Based on a XZ plane, so y=z and z=y
     baseHeight = WALL_INNER_SECTION_OFFSET_CM
     xAxisOffset = GRIDFINITY_SIZE_CM / 2
-    yAxisOffset = GRIDFINITY_BASE_HEIGHT_CM / 2 + GRIDFINITY_Z_OFFSET_CM  # bases on gridfinity base heigth and an offset of .5mm from xy axis
-    zAxisOffset = -baseHeight - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - EXTERNAL_TOLERANCE_CM - extraSpacing
+    yAxisOffset = (
+        GRIDFINITY_BASE_HEIGHT_CM / 2 + GRIDFINITY_Z_OFFSET_CM
+    )  # bases on gridfinity base heigth and an offset of .5mm from xy axis
+    zAxisOffset = (
+        -baseHeight - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - EXTERNAL_TOLERANCE_CM - extraSpacing
+    )
 
     # base of the insert
     centerPoint = Point3D.create(xAxisOffset, yAxisOffset, zAxisOffset)
@@ -883,7 +1217,9 @@ def generateInsertBase(
     chamfers = root.features.chamferFeatures
     chamferInput = chamfers.createInput2()
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
-        wrapInCollection(insertChamfer.endFaces.item(0).edges.item(0)), ValueInput.createByReal(MAIN_SCREW_THREAD_BODY_THICKNESS_CM), False
+        wrapInCollection(insertChamfer.endFaces.item(0).edges.item(0)),
+        ValueInput.createByReal(MAIN_SCREW_THREAD_BODY_THICKNESS_CM),
+        False,
     )
     chamfer = chamfers.add(chamferInput)
 
@@ -904,8 +1240,16 @@ def generateInsertBase(
         create2PointRectFromPoints(
             insertComponent,
             sketche,
-            Point3D.create(-ACC_EXTENSION_WIDTH_CM / 2 + xAxisOffset, -ACC_EXTENSION_HEIGTH_CM / 2 + yAxisOffset, -extraSpacing),
-            Point3D.create(ACC_EXTENSION_WIDTH_CM / 2 + xAxisOffset, ACC_EXTENSION_HEIGTH_CM / 2 + yAxisOffset, -extraSpacing),
+            Point3D.create(
+                -ACC_EXTENSION_WIDTH_CM / 2 + xAxisOffset,
+                -ACC_EXTENSION_HEIGTH_CM / 2 + yAxisOffset,
+                -extraSpacing,
+            ),
+            Point3D.create(
+                ACC_EXTENSION_WIDTH_CM / 2 + xAxisOffset,
+                ACC_EXTENSION_HEIGTH_CM / 2 + yAxisOffset,
+                -extraSpacing,
+            ),
             extraSpacing,
         )
 
@@ -919,7 +1263,13 @@ def generateInsertBase(
         # filletEdges(insertComponent.component, edgeToFillet, 0.1)
 
     if generateNotch:
-        createNotch(insertComponent.component, insertOuterRadius, invertAxis, zAxisOffset, centerPoint)
+        createNotch(
+            insertComponent.component,
+            insertOuterRadius,
+            invertAxis,
+            zAxisOffset,
+            centerPoint,
+        )
 
     # trimming the sides of the insert so it can be inserted in the screw
     if trimTop < insertOuterRadius:
@@ -947,21 +1297,39 @@ def generateInsertBase(
 
     if insertXCount > 1 or insertYCount > 1:
         xAxis = insertComponent.component.xConstructionAxis
-        patternInsertSection(insertComponent.component, xAxis, wrapInCollection(insertComponent.bRepBodies.item(0)), insertXCount)
+        patternInsertSection(
+            insertComponent.component,
+            xAxis,
+            wrapInCollection(insertComponent.bRepBodies.item(0)),
+            insertXCount,
+        )
 
         offset_angle = calculateOffsetAngle(WALL_NB_SIDES)
         r = GRIDFINITY_SIZE_CM / 2 / math.cos(math.pi / WALL_NB_SIDES)
         for rowIndex in range(1, insertYCount):
             startPoint = createHexPoint(r, HexPointIndex.TOP.value, offset_angle)
-            toPoint = createHexPoint(r, HexPointIndex.BOTTOM_LEFT.value if rowIndex % 2 == 0 else HexPointIndex.BOTTOM_RIGHT.value, offset_angle)
+            toPoint = createHexPoint(
+                r,
+                HexPointIndex.BOTTOM_LEFT.value if rowIndex % 2 == 0 else HexPointIndex.BOTTOM_RIGHT.value,
+                offset_angle,
+            )
             delta = createDeltaVector(startPoint, toPoint)
-            copyBodies(insertComponent.component, wrapInCollection(insertComponent.bRepBodies.item(0)), delta)
-            patternBodies(insertComponent.component, xAxis, wrapInCollection(insertComponent.bRepBodies.item(0)), insertXCount)
+            copyBodies(
+                insertComponent.component,
+                wrapInCollection(insertComponent.bRepBodies.item(0)),
+                delta,
+            )
+            patternBodies(
+                insertComponent.component,
+                xAxis,
+                wrapInCollection(insertComponent.bRepBodies.item(0)),
+                insertXCount,
+            )
 
     return insertComponent
 
+
 def generateHook(args: CommandEventArgs):
- 
     inputs = args.command.commandInputs
 
     trimTop = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_TRIM_TOP).value
@@ -969,7 +1337,7 @@ def generateHook(args: CommandEventArgs):
     notch = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_NOTCH).value
     length = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_LENGTH).value
     size = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_SIZE).value
-    
+
     addStopper = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_STOPPER).value
     stopperHeight = inputs.itemById(MENU_HOOK_GROUP).children.itemById(MENU_HOOK_STOPPER_HEIGHT).value
 
@@ -978,7 +1346,10 @@ def generateHook(args: CommandEventArgs):
 
     planeInput: ConstructionPlaneInput = baseComponent.component.constructionPlanes.createInput()
     zAxisOffset = WALL_INNER_SECTION_OFFSET_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM - MAIN_SCREW_THREAD_BODY_THICKNESS_CM
-    planeInput.setByOffset(baseComponent.component.xZConstructionPlane, ValueInput.createByReal(zAxisOffset))
+    planeInput.setByOffset(
+        baseComponent.component.xZConstructionPlane,
+        ValueInput.createByReal(zAxisOffset),
+    )
 
     offsetPlane = baseComponent.component.constructionPlanes.add(planeInput)
     sketches = baseComponent.component.sketches
@@ -1002,21 +1373,34 @@ def generateHook(args: CommandEventArgs):
         stopperPlaneInput: ConstructionPlaneInput = baseComponent.component.constructionPlanes.createInput()
 
         if size > trimBottom * 2:
-            sizeOffset =  (trimBottom * 2 - size)
+            sizeOffset = trimBottom * 2 - size
         else:
-            sizeOffset =  -(-trimBottom * 2 + size)
+            sizeOffset = -(-trimBottom * 2 + size)
 
-        stopperPlaneInput.setByOffset(baseComponent.component.xYConstructionPlane, ValueInput.createByReal(-GRIDFINITY_Z_OFFSET_CM - sizeOffset))
+        stopperPlaneInput.setByOffset(
+            baseComponent.component.xYConstructionPlane,
+            ValueInput.createByReal(-GRIDFINITY_Z_OFFSET_CM - sizeOffset),
+        )
         stopperPlane = baseComponent.component.constructionPlanes.add(stopperPlaneInput)
         sketches = baseComponent.component.sketches
 
         stopperRadius = (size / 2 - 0.15) / 2
         stopperCenter = Point3D.create(xAxisOffset, length - stopperRadius - 0.05, 0)
-        stopper = createCylinderFromPoint(stopperPlane.component, stopperRadius, stopperHeight, stopperCenter, stopperPlane)
+        stopper = createCylinderFromPoint(
+            stopperPlane.component,
+            stopperRadius,
+            stopperHeight,
+            stopperCenter,
+            stopperPlane,
+        )
 
         for face in stopper.endFaces:
             for e in face.edges:
-                filletEdges(baseComponent.component, wrapInCollection(e), 0.2 if size > 8 else 0.1)
+                filletEdges(
+                    baseComponent.component,
+                    wrapInCollection(e),
+                    0.2 if size > 8 else 0.1,
+                )
 
     # select the edges that match the length, so we know it's the side edges
     edges = ObjectCollection.create()
@@ -1049,7 +1433,13 @@ def createHexPoint(radius: float, index: int, offset_angle: float) -> Point3D:
     return Point3D.create(math.cos(angle) * radius, 0, math.sin(angle) * radius)
 
 
-def createNotch(targetOccurence: Occurrence, insertOuterRadius: float, invertAxis: bool, offset: float, centerPoint: Point3D):
+def createNotch(
+    targetOccurence: Occurrence,
+    insertOuterRadius: float,
+    invertAxis: bool,
+    offset: float,
+    centerPoint: Point3D,
+):
     """
     Creates a notch on a target occurrence to "lock" to the wall. These notches are angles at 45 degrees.
 
@@ -1067,10 +1457,18 @@ def createNotch(targetOccurence: Occurrence, insertOuterRadius: float, invertAxi
     sketches = targetOccurence.sketches
     if invertAxis:
         plane = targetOccurence.yZConstructionPlane
-        notchSketchCenter = Point3D.create(ACC_EXTENSION_HEIGTH_CM / 2 + NOTCH_SIZE_RADIUS_CM / 2, offset, GRIDFINITY_SIZE_CM / 2 - insertOuterRadius + NOTCH_SIZE_RADIUS_CM)
+        notchSketchCenter = Point3D.create(
+            ACC_EXTENSION_HEIGTH_CM / 2 + NOTCH_SIZE_RADIUS_CM / 2,
+            offset,
+            GRIDFINITY_SIZE_CM / 2 - insertOuterRadius + NOTCH_SIZE_RADIUS_CM,
+        )
     else:
         plane = targetOccurence.xYConstructionPlane
-        notchSketchCenter = Point3D.create(GRIDFINITY_SIZE_CM / 2, offset, ACC_EXTENSION_HEIGTH_CM / 2 + NOTCH_SIZE_RADIUS_CM / 2)
+        notchSketchCenter = Point3D.create(
+            GRIDFINITY_SIZE_CM / 2,
+            offset,
+            ACC_EXTENSION_HEIGTH_CM / 2 + NOTCH_SIZE_RADIUS_CM / 2,
+        )
 
     endPoint = Point3D.create(centerPoint.x, centerPoint.y, 0)
     lines = targetOccurence.sketches.add(targetOccurence.xZConstructionPlane).sketchCurves.sketchLines
@@ -1080,7 +1478,14 @@ def createNotch(targetOccurence: Occurrence, insertOuterRadius: float, invertAxi
     sketch: Sketch = sketches.add(plane)
     sketch.name = "Notch"
     sketch.sketchCurves.sketchCircles.addByCenterRadius(notchSketchCenter, NOTCH_SIZE_RADIUS_CM - getClearance())
-    circPatternSketch(targetOccurence, FeatureOperations.JoinFeatureOperation, sketch, NOTCH_SIZE_RADIUS_CM * 2, 2, axisLine)
+    circPatternSketch(
+        targetOccurence,
+        FeatureOperations.JoinFeatureOperation,
+        sketch,
+        NOTCH_SIZE_RADIUS_CM * 2,
+        2,
+        axisLine,
+    )
     axisLine.deleteMe()  # gives warning
 
 
@@ -1103,11 +1508,26 @@ def patternInsertSection(rootComponent: Component, xAxis, bodies: ObjectCollecti
 
     # Generate a row of insert
     rectangularPatterns = rootComponent.features.rectangularPatternFeatures
-    rectangularPatternInput = rectangularPatterns.createInput(bodies, xAxis, quantityOne, distanceOne, PatternDistanceType.SpacingPatternDistanceType)
+    rectangularPatternInput = rectangularPatterns.createInput(
+        bodies,
+        xAxis,
+        quantityOne,
+        distanceOne,
+        PatternDistanceType.SpacingPatternDistanceType,
+    )
     return rectangularPatterns.add(rectangularPatternInput)
 
 
-def cuttingInsertSide(targetOccurence: Occurrence, cuttingSketch, insertWidth: float, height: float, xOffset, yOffset, reverse: bool, invertAxis: bool = False):
+def cuttingInsertSide(
+    targetOccurence: Occurrence,
+    cuttingSketch,
+    insertWidth: float,
+    height: float,
+    xOffset,
+    yOffset,
+    reverse: bool,
+    invertAxis: bool = False,
+):
     """
     Removes sides of inserts. It's usefull to have a bottom trimmed to better print flat without support.
     The invert axis when the insert is rotated 90 degrees.
@@ -1125,13 +1545,29 @@ def cuttingInsertSide(targetOccurence: Occurrence, cuttingSketch, insertWidth: f
 
     if invertAxis:
         cuttingSketch.sketchCurves.sketchLines.addTwoPointRectangle(
-            Point3D.create(-getScrewInnerRadius() + xOffset, insertWidth + yOffset if reverse else -insertWidth + yOffset, 0),
-            Point3D.create(getScrewInnerRadius() + xOffset, getScrewInnerRadius() + yOffset if reverse else -getScrewInnerRadius() + yOffset, 0),
+            Point3D.create(
+                -getScrewInnerRadius() + xOffset,
+                insertWidth + yOffset if reverse else -insertWidth + yOffset,
+                0,
+            ),
+            Point3D.create(
+                getScrewInnerRadius() + xOffset,
+                getScrewInnerRadius() + yOffset if reverse else -getScrewInnerRadius() + yOffset,
+                0,
+            ),
         )
     else:
         cuttingSketch.sketchCurves.sketchLines.addTwoPointRectangle(
-            Point3D.create(insertWidth + xOffset if reverse else -insertWidth + xOffset, -getScrewInnerRadius() + yOffset, 0),
-            Point3D.create(getScrewInnerRadius() + xOffset if reverse else -getScrewInnerRadius() - xOffset, getScrewInnerRadius() + yOffset, 0),
+            Point3D.create(
+                insertWidth + xOffset if reverse else -insertWidth + xOffset,
+                -getScrewInnerRadius() + yOffset,
+                0,
+            ),
+            Point3D.create(
+                getScrewInnerRadius() + xOffset if reverse else -getScrewInnerRadius() - xOffset,
+                getScrewInnerRadius() + yOffset,
+                0,
+            ),
         )
 
     profile = cuttingSketch.profiles.item(0)
@@ -1196,7 +1632,13 @@ def generateAnchor(args: CommandEventArgs, offsetAnchor: bool = False):
         offsetLocation = Point3D.create(innerCutRadius / 2 - chamferWidth, 0, 0)
 
         # inner offset part
-        offsetAnchor = createCylinderFromPointXYPlane(anchorComponent.component, innerCutRadius, height, offsetLocation, FeatureOperations.NewBodyFeatureOperation)
+        offsetAnchor = createCylinderFromPointXYPlane(
+            anchorComponent.component,
+            innerCutRadius,
+            height,
+            offsetLocation,
+            FeatureOperations.NewBodyFeatureOperation,
+        )
         chamferedInsert = createAnchorChamfer(anchorComponent, offsetAnchor.faces.item(0).edges.item(1), height, True)
 
         # Cut the main part with the offset insert
@@ -1210,7 +1652,13 @@ def generateAnchor(args: CommandEventArgs, offsetAnchor: bool = False):
         combineFeatures.add(input)
 
         # inner offset part
-        offsetAnchor = createCylinderFromPointXYPlane(anchorComponent.component, innerCutRadius, height, offsetLocation, FeatureOperations.NewBodyFeatureOperation)
+        offsetAnchor = createCylinderFromPointXYPlane(
+            anchorComponent.component,
+            innerCutRadius,
+            height,
+            offsetLocation,
+            FeatureOperations.NewBodyFeatureOperation,
+        )
         offsetAnchor.name = "Anchor Offset Insert"
         # no space as this is the body that will be exported to a file and I don't like spaces in file names
         anchorComponent.component.bRepBodies.item(1).name = "AnchorOffsetInsert"
@@ -1222,10 +1670,24 @@ def generateAnchor(args: CommandEventArgs, offsetAnchor: bool = False):
     headDiameter: float = inputs.itemById(MENU_ANCHOR_GROUP).children.itemById(MENU_ANCHOR_HEAD_DIAMETER).value
     countersinkAngle: int = inputs.itemById(MENU_ANCHOR_GROUP).children.itemById(MENU_ANCHOR_COUNTERSINK_ANGLE).value
     holeDiameter: float = inputs.itemById(MENU_ANCHOR_GROUP).children.itemById(MENU_ANCHOR_HOLE_DIAMETER).value
-    createScrewHole(anchorComponent, anchorBase.endFaces.item(0), headDiameter, countersinkAngle, holeDiameter, topOffset)
+    createScrewHole(
+        anchorComponent,
+        anchorBase.endFaces.item(0),
+        headDiameter,
+        countersinkAngle,
+        holeDiameter,
+        topOffset,
+    )
 
 
-def createScrewHole(anchorOccurrence: Occurrence, endFace: BRepFace, headDiameter: float, countersinkAngle: float, holeDiameter: float, topOffset: float):
+def createScrewHole(
+    anchorOccurrence: Occurrence,
+    endFace: BRepFace,
+    headDiameter: float,
+    countersinkAngle: float,
+    holeDiameter: float,
+    topOffset: float,
+):
     """
     Creates a screw hole on the given anchor occurrence.
 
@@ -1246,8 +1708,18 @@ def createScrewHole(anchorOccurrence: Occurrence, endFace: BRepFace, headDiamete
     offsetPlane = createOffsetPlane(anchorOccurrence, endFace, 0)
 
     if topOffset > 0:
-        offsetPoint = Point3D.create(0, 0, WALL_THICKNESS_CM - WALL_INNER_SECTION_OFFSET_CM - getClearance() - topOffset)
-        createCylinderFromPointXYPlane(anchorOccurrence.component, headDiameter / 2, topOffset, offsetPoint, FeatureOperations.CutFeatureOperation)
+        offsetPoint = Point3D.create(
+            0,
+            0,
+            WALL_THICKNESS_CM - WALL_INNER_SECTION_OFFSET_CM - getClearance() - topOffset,
+        )
+        createCylinderFromPointXYPlane(
+            anchorOccurrence.component,
+            headDiameter / 2,
+            topOffset,
+            offsetPoint,
+            FeatureOperations.CutFeatureOperation,
+        )
 
     offsetSketch = sketches.add(offsetPlane)
     offsetSketchPoints = offsetSketch.sketchPoints
@@ -1285,7 +1757,12 @@ def generateMainScrew(args: CommandEventArgs):
     # Screw Body
     inputs = args.command.commandInputs
     bodyHeight: float = inputs.itemById(MENU_MAIN_SCREW_GROUP).children.itemById(MAIN_SCREW_HEIGHT).value
-    createMainScrewBody(mainScrewComponent.component, mainScrewBodyRadius, getScrewInnerRadius(), bodyHeight)
+    createMainScrewBody(
+        mainScrewComponent.component,
+        mainScrewBodyRadius,
+        getScrewInnerRadius(),
+        bodyHeight,
+    )
 
     # Screw Thread
     mainScrewThread = createExternalThread(
@@ -1381,20 +1858,35 @@ def createScrewHead(mainScrewComponent: Occurrence):
     exteriorScrewRadius = (GRIDFINITY_SIZE_CM - HEAD_OFFSET_CM) / 2
     # Draw the main screw profile
     lines = sketch.sketchCurves.sketchLines
-    startingPoint = Point3D.create(-MAIN_SCREW_THREAD_BODY_THICKNESS_CM, MAIN_SCREW_HEAD_INTERNAL_DIAMETER_CM / 2, 0)
+    startingPoint = Point3D.create(
+        -MAIN_SCREW_THREAD_BODY_THICKNESS_CM,
+        MAIN_SCREW_HEAD_INTERNAL_DIAMETER_CM / 2,
+        0,
+    )
     internalScrewSide = lines.addByTwoPoints(startingPoint, Point3D.create(0, MAIN_SCREW_HEAD_INTERNAL_DIAMETER_CM / 2, 0))
     bottomLine = lines.addByTwoPoints(internalScrewSide.endSketchPoint, Point3D.create(0, exteriorScrewRadius, 0))
-    externalScrewSide = lines.addByTwoPoints(bottomLine.endSketchPoint, Point3D.create(-MAIN_SCREW_HEAD_THICKNESS_CM, bottomLine.endSketchPoint.geometry.y, 0))
+    externalScrewSide = lines.addByTwoPoints(
+        bottomLine.endSketchPoint,
+        Point3D.create(-MAIN_SCREW_HEAD_THICKNESS_CM, bottomLine.endSketchPoint.geometry.y, 0),
+    )
     topLine = lines.addByTwoPoints(
         externalScrewSide.endSketchPoint,
-        Point3D.create(-MAIN_SCREW_HEAD_THICKNESS_CM, MAIN_SCREW_HEAD_INTERNAL_DIAMETER_CM / 2 + MAIN_SCREW_THREAD_BODY_THICKNESS_CM, 0),
+        Point3D.create(
+            -MAIN_SCREW_HEAD_THICKNESS_CM,
+            MAIN_SCREW_HEAD_INTERNAL_DIAMETER_CM / 2 + MAIN_SCREW_THREAD_BODY_THICKNESS_CM,
+            0,
+        ),
     )
     lines.addByTwoPoints(topLine.endSketchPoint, startingPoint)
 
     # revolve the sketch now
-    rotationAxis = lines.addByTwoPoints(Point3D.create(0, 0, 0), Point3D.create(-1, 0, 0))  # we are working from yz plane, so rotation axis is on X, Y
+    rotationAxis = lines.addByTwoPoints(
+        Point3D.create(0, 0, 0), Point3D.create(-1, 0, 0)
+    )  # we are working from yz plane, so rotation axis is on X, Y
     rotationAxis.isConstruction = True
-    rev_input = mainScrewComponent.component.features.revolveFeatures.createInput(sketch.profiles.item(0), rotationAxis, FeatureOperations.JoinFeatureOperation)
+    rev_input = mainScrewComponent.component.features.revolveFeatures.createInput(
+        sketch.profiles.item(0), rotationAxis, FeatureOperations.JoinFeatureOperation
+    )
     rev_input.setAngleExtent(False, ValueInput.createByReal(360))
     mainScrewComponent.component.features.revolveFeatures.add(rev_input)
 
@@ -1408,8 +1900,19 @@ def createScrewHead(mainScrewComponent: Occurrence):
     hardCodedOffset = 0.015
     # the length needs to account for the arc at the end of end of the slot, twice, so removing slotsWidth ( 2 * slotsWidth / 2 = slotsWidth at radius in radian)
     slotLengthInRad = math.pi / 180 * angle - (slotsWidth / exteriorScrewRadius)
-    slot(sketch, hardCodedOffset + exteriorScrewRadius - slotsWidth, slotLengthInRad, slotsWidth)  # top slot
-    slot(sketch, hardCodedOffset + exteriorScrewRadius - bottomSlotWidth + 0.01, slotLengthInRad * 3 / 4, bottomSlotWidth, MAIN_SCREW_HEAD_THICKNESS_CM / 2)  # bottom slot to loft
+    slot(
+        sketch,
+        hardCodedOffset + exteriorScrewRadius - slotsWidth,
+        slotLengthInRad,
+        slotsWidth,
+    )  # top slot
+    slot(
+        sketch,
+        hardCodedOffset + exteriorScrewRadius - bottomSlotWidth + 0.01,
+        slotLengthInRad * 3 / 4,
+        bottomSlotWidth,
+        MAIN_SCREW_HEAD_THICKNESS_CM / 2,
+    )  # bottom slot to loft
     sketch.isVisible = False
 
     loftFeats = mainScrewComponent.component.features.loftFeatures
@@ -1436,7 +1939,13 @@ def createScrewHead(mainScrewComponent: Occurrence):
         futil.log(f"{CMD_NAME} Failed to fillet the edges:\n{traceback.format_exc()}")
 
 
-def slot(sketch: Sketch, innerRadius: float, slotLengthInRad: float, slotWidth: float, zOffset: float = 0):
+def slot(
+    sketch: Sketch,
+    innerRadius: float,
+    slotLengthInRad: float,
+    slotWidth: float,
+    zOffset: float = 0,
+):
     """
     Creates a the shape in the screw head for creating slots.
 
@@ -1453,8 +1962,16 @@ def slot(sketch: Sketch, innerRadius: float, slotLengthInRad: float, slotWidth: 
 
     arcs = sketch.sketchCurves.sketchArcs
     startOffset = -slotLengthInRad / 2
-    internalArc = arcs.addByCenterStartSweep(Point3D.create(0, 0, zOffset), createPoint(innerRadius, startOffset, zOffset), slotLengthInRad)
-    externalArc = arcs.addByCenterStartSweep(Point3D.create(0, 0, zOffset), createPoint(innerRadius + slotWidth, startOffset, zOffset), slotLengthInRad)
+    internalArc = arcs.addByCenterStartSweep(
+        Point3D.create(0, 0, zOffset),
+        createPoint(innerRadius, startOffset, zOffset),
+        slotLengthInRad,
+    )
+    externalArc = arcs.addByCenterStartSweep(
+        Point3D.create(0, 0, zOffset),
+        createPoint(innerRadius + slotWidth, startOffset, zOffset),
+        slotLengthInRad,
+    )
 
     firstArcCenterPoint = createPoint(innerRadius + slotWidth / 2, startOffset, zOffset)
     arcs.addByCenterStartSweep(firstArcCenterPoint, internalArc.startSketchPoint, math.pi)

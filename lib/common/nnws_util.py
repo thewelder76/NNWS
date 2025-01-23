@@ -1,6 +1,19 @@
 import math
 
-from adsk.core import Appearance, Application, Color, ColorProperty, GroupCommandInput, Matrix3D, ObjectCollection, Point3D, SurfaceTypes, ValueCommandInput, ValueInput, Vector3D
+from adsk.core import (
+    Appearance,
+    Application,
+    Color,
+    ColorProperty,
+    GroupCommandInput,
+    Matrix3D,
+    ObjectCollection,
+    Point3D,
+    SurfaceTypes,
+    ValueCommandInput,
+    ValueInput,
+    Vector3D,
+)
 from adsk.fusion import (
     BRepEdges,
     BRepFace,
@@ -30,7 +43,9 @@ from ...lib.common.nnws_constants import INTERNAL_WALL_CHAMFER_ANGLE, THREAD_PIT
 # NNWS constants
 
 
-def valueInputMinMax(group: GroupCommandInput, id: str, text: str, unitType: str, value: float, min: float, max: float = -1) -> ValueCommandInput:
+def valueInputMinMax(
+    group: GroupCommandInput, id: str, text: str, unitType: str, value: float, min: float, max: float = -1
+) -> ValueCommandInput:
     """
     Creates a ValueCommandInput with minimum and maximum values.
 
@@ -143,10 +158,13 @@ def createExternalThread(targetOccurence: Occurrence, threadStartOffset: float, 
 
     sweepFeature = commonCreateThread(targetOccurence, threadStartOffset, radius, height)
 
+    # 2 long edges over 28cm are the ones connecting the thread to the cilinder
+    # hacky, but works, but needs to find a better way for sure. Could do selection on the 2 longest
+    lenghtSelection = 28 * height
+
     edgeCollection = ObjectCollection.create()
     for edge in sweepFeature.faces.item(0).edges:
-        # 2 long edges over 30cm are the ones connecting the thread to the cilinder
-        if edge.length > 30:
+        if edge.length > lenghtSelection:
             edgeCollection.add(edge)
 
     filletEdges(targetOccurence, edgeCollection, 0.075)
@@ -353,6 +371,7 @@ def createOffsetPlane(target: Occurrence, onFace: BRepFace, offsetVal: float) ->
     offsetPlane = planes.add(planeInput)
     return offsetPlane
 
+
 def createPolygon(sketch: Sketch, radius: float, nbSides: int, xOffset: float = 0.0, yOffset: float = 0.0):
     """
     Create a polygon shape of nbSides on a sketch
@@ -388,6 +407,7 @@ def createPolygon(sketch: Sketch, radius: float, nbSides: int, xOffset: float = 
 
     return edges
 
+
 def createPolygonHexPoint(radius: float, nbSides: int, index: int, offset_angle: float, xOffset: float = 0, yOffset: float = 0) -> Point3D:
     angle = 2 * math.pi * index / nbSides + offset_angle
     x = math.cos(angle) * radius
@@ -413,7 +433,11 @@ def createCylinder(targetOccurence: Occurrence, outerRadius: float, height: floa
 
 
 def createCylinderFromPointXYPlane(
-    targetOccurence: Occurrence, outerRadius: float, height: float, point3d: Point3D, operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation
+    targetOccurence: Occurrence,
+    outerRadius: float,
+    height: float,
+    point3d: Point3D,
+    operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation,
 ) -> ExtrudeFeatures:
     """
     Creates a cylinder from a point in the XY plane.
@@ -432,7 +456,11 @@ def createCylinderFromPointXYPlane(
 
 
 def createCylinderFromPointXZPlane(
-    targetOccurence: Occurrence, outerRadius: float, height: float, point3d: Point3D, operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation
+    targetOccurence: Occurrence,
+    outerRadius: float,
+    height: float,
+    point3d: Point3D,
+    operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation,
 ) -> ExtrudeFeatures:
     """
     Creates a cylinder from a point on the XZ plane.
@@ -451,7 +479,12 @@ def createCylinderFromPointXZPlane(
 
 
 def createCylinderFromPoint(
-    targetOccurence: Occurrence, outerRadius: float, height: float, point3d: Point3D, plane, operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation
+    targetOccurence: Occurrence,
+    outerRadius: float,
+    height: float,
+    point3d: Point3D,
+    plane,
+    operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation,
 ) -> ExtrudeFeatures:
     """
     Creates a cylinder feature by extruding a circle sketch from a given point.
@@ -481,7 +514,12 @@ def createCylinderFromPoint(
 
 
 def create2PointRectFromPoints(
-    targetOccurence: Occurrence, sketch: Sketch, p1: Point3D, p2: Point3D, extrudeHeight: float, operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation
+    targetOccurence: Occurrence,
+    sketch: Sketch,
+    p1: Point3D,
+    p2: Point3D,
+    extrudeHeight: float,
+    operationType: FeatureOperations = FeatureOperations.JoinFeatureOperation,
 ) -> ExtrudeFeature:
     """
     Creates a 2-point rectangle in the given sketch using the provided points.
